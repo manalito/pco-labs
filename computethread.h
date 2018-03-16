@@ -15,7 +15,7 @@ private:
     double centerX;
     double centerY;
     enum { ColormapSize = 512 };
-    uint colormap[ColormapSize];
+    uint* colormap;
     QImage* image;
     int Limit;
     int MaxIterations;
@@ -25,7 +25,8 @@ public:
     void compute();
     void setArgs(int minHeight, int maxHeight, int minWidth, int maxWidth,
                  double scaleFactor, bool restart, bool abort, QImage* image,
-                 const int Limit, const int MaxIterations, double centerX, double centerY);
+                 const int Limit, const int MaxIterations, double centerX,
+                 double centerY, uint* colormap);
 };
 
 #endif // COMPUTETHREAD_H

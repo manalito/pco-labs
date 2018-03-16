@@ -122,7 +122,7 @@ void RenderThread::run()
 
             for(int i = 0; i < nbThreads; ++i){
                 threads[i].setArgs(minHeight, maxHeight, minWidth, maxWidth , scaleFactor,
-                                   restart, abort, &image, Limit, MaxIterations, centerX, centerY);
+                                   restart, abort, &image, Limit, MaxIterations, centerX, centerY, colormap);
                 threads[i].start();
                 minWidth = maxWidth + 1;
                 maxWidth += incWidth;
