@@ -47,7 +47,8 @@ void ComputeThread::run() {
 }
 
 void ComputeThread::setArgs(int minHeight, int maxHeight, int minWidth, int maxWidth,
-                            double scaleFactor, bool restart, bool abort, QImage* image, const int Limit, const int MaxIterations){
+                            double scaleFactor, bool restart, bool abort, QImage* image,
+                            const int Limit, const int MaxIterations,  double centerX, double centerY){
     this->minHeight = minHeight;
     this->maxHeight = maxHeight;
     this->minWidth  = minWidth;
@@ -58,4 +59,7 @@ void ComputeThread::setArgs(int minHeight, int maxHeight, int minWidth, int maxW
     this->image = image;
     this->Limit = Limit;
     this->MaxIterations = MaxIterations;
+    this->centerX = centerX;
+    this->centerY = centerY;
+
 }
