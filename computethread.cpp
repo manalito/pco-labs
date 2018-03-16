@@ -11,7 +11,7 @@ void ComputeThread::compute(){
             return;
 
         QRgb *scanLine =
-                reinterpret_cast<QRgb *>(image.scanLine(y + maxHeight));
+                reinterpret_cast<QRgb *>(image->scanLine(y + maxHeight));
         double ay = centerY + (y * scaleFactor);
 
         for (int x = minWidth; x < maxHeight; ++x) {
@@ -47,7 +47,7 @@ void ComputeThread::run() {
 }
 
 void ComputeThread::setArgs(int minHeight, int maxHeight, int minWidth, int maxWidth,
-                            double scaleFactor, bool restart, bool abort, QImage* image, const int Limit){
+                            double scaleFactor, bool restart, bool abort, QImage* image, const int Limit, const int MaxIterations){
     this->minHeight = minHeight;
     this->maxHeight = maxHeight;
     this->minWidth  = minWidth;
@@ -55,4 +55,7 @@ void ComputeThread::setArgs(int minHeight, int maxHeight, int minWidth, int maxW
     this->scaleFactor = scaleFactor;
     this->restart = restart;
     this->abort = abort;
+    this->image = image;
+    this->Limit = Limit;
+    this->MaxIterations = MaxIterations;
 }
