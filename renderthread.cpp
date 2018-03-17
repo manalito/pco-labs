@@ -109,7 +109,7 @@ void RenderThread::run()
 
             const int Limit = 4;
 
-            int nbThreads = QThread::idealThreadCount();
+            int nbThreads = 1;//= QThread::idealThreadCount();
 
             int minHeight = -halfHeight;
             int incHeight = halfHeight / nbThreads * 2;
@@ -121,13 +121,11 @@ void RenderThread::run()
             ComputeThread threads[nbThreads];
 
             for(int i = 0; i < nbThreads; ++i){
-                threads[i].setArgs(minHeight, maxHeight, minWidth, maxWidth , scaleFactor,
+                threads[i].setArgs(-halfHeight, halfHeight, minWidth, maxWidth , scaleFactor,
                                    restart, abort, &image, Limit, MaxIterations, centerX, centerY, colormap);
                 threads[i].start();
                 minWidth = maxWidth + 1;
                 maxWidth += incWidth;
-                minHeight = maxHeight + 1;
-                maxHeight += incHeight;
             }
 
 

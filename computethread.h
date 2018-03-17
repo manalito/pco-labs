@@ -10,8 +10,8 @@ private:
     int minWidth;
     int maxWidth;
     double scaleFactor;
-    bool restart;
-    bool abort;
+    bool* restart;
+    bool* abort;
     double centerX;
     double centerY;
     enum { ColormapSize = 512 };
@@ -24,7 +24,7 @@ private:
 public:
     void compute();
     void setArgs(int minHeight, int maxHeight, int minWidth, int maxWidth,
-                 double scaleFactor, bool restart, bool abort, QImage* image,
+                 double scaleFactor, bool &restart, bool &abort, QImage* image,
                  const int Limit, const int MaxIterations, double centerX,
                  double centerY, uint* colormap);
 };
