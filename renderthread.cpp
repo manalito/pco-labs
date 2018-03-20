@@ -96,7 +96,7 @@ void RenderThread::run()
 
         int halfWidth = resultSize.width() / 2;
         int halfHeight = resultSize.height() / 2;
-        QImage image(resultSize, QImage::Format_RGB32);
+
 
         const int NumPasses = 8;
         int pass = 0;
@@ -104,6 +104,7 @@ void RenderThread::run()
 
         while (pass < NumPasses) {
             const int MaxIterations = (1 << (2 * pass + 6)) + 32;
+            QImage image(resultSize, QImage::Format_RGB32);
 
             QTime startTime = QTime::currentTime();
 
@@ -114,18 +115,15 @@ void RenderThread::run()
             int minHeight = -halfHeight;
             int incHeight = halfHeight / nbThreads * 2;
             int maxHeight = minHeight + incHeight;
-            int minWidth = -halfWidth;
-            int incWidth =  halfWidth / nbThreads * 2;
-            int maxWidth = minWidth + incWidth;
 
             ComputeThread threads[nbThreads];
 
             for(int i = 0; i < nbThreads; ++i){
-                threads[i].setArgs(-halfHeight, halfHeight, minWidth, maxWidth , scaleFactor,
+                threads[i].setArgs(-halfHeight, halfHeight, halfWidth , scaleFactor,
                                    restart, abort, &image, Limit, MaxIterations, centerX, centerY, colormap);
                 threads[i].start();
-                minWidth = maxWidth + 1;
-                maxWidth += incWidth;
+                minHeight = maxHeight + 1;
+                maxHeight += incHeight;
             }
 
 
