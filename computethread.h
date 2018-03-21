@@ -5,16 +5,15 @@
 
 class ComputeThread : public QThread {
 private:
-    int minHeight;
-    int maxHeight;
-    int minWidth;
-    int maxWidth;
+    int halfHeight;
+    int halfWidth;
     double scaleFactor;
     bool* restart;
     bool* abort;
     double centerX;
     double centerY;
-    enum { ColormapSize = 512 };
+
+    int ColormapSize;
     uint* colormap;
     QImage* image;
     int Limit;
@@ -22,11 +21,16 @@ private:
     virtual void run();
 
 public:
+    ComputeThread();
+    ComputeThread(int halfHeight, int halfWidth,
+                     double scaleFactor, bool &restart, bool &abort, QImage* image,
+                     const int Limit, const int MaxIterations, double centerX,
+                     double centerY, uint* colormap, int colormapsize);
     void compute();
-    void setArgs(int minHeight, int maxHeight, int halfWidth,
+    void setArgs(int halfHeight, int halfWidth,
                  double scaleFactor, bool &restart, bool &abort, QImage* image,
                  const int Limit, const int MaxIterations, double centerX,
-                 double centerY, uint* colormap);
+                 double centerY, uint* colormap, int colormapsize);
 };
 
 #endif // COMPUTETHREAD_H

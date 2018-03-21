@@ -46,6 +46,8 @@
 #include <QThread>
 #include <QWaitCondition>
 
+#include "computethread.h"
+
 QT_BEGIN_NAMESPACE
 class QImage;
 QT_END_NAMESPACE
@@ -81,6 +83,9 @@ private:
 
     enum { ColormapSize = 512 };
     uint colormap[ColormapSize];
+
+    const int THREAD_COUNT = QThread::idealThreadCount();
+     std::vector<ComputeThread*> workers;
 };
 //! [0]
 

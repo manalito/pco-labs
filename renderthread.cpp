@@ -54,6 +54,7 @@ RenderThread::RenderThread(QObject *parent)
 
     for (int i = 0; i < ColormapSize; ++i)
         colormap[i] = rgbFromWaveLength(380.0 + (i * 400.0 / ColormapSize));
+    workers.resize(THREAD_COUNT);
 }
 
 RenderThread::~RenderThread()
@@ -116,12 +117,14 @@ void RenderThread::run()
             int incHeight = halfHeight / nbThreads * 2;
             int maxHeight = minHeight + incHeight;
 
+
             ComputeThread threads[nbThreads];
 
+            ComputeThread* ct1;
             for(int i = 0; i < nbThreads; ++i){
-                threads[i].setArgs(-halfHeight, halfHeight, halfWidth , scaleFactor,
-                                   restart, abort, &image, Limit, MaxIterations, centerX, centerY, colormap);
-                threads[i].start();
+                ct1 = new ComputeThread(halfHeight, halfWidth , scaleFactor,
+                                   restart, abort, &image, Limit, MaxIterations, centerX, centerY, colormap, ColormapSize);
+                ct1->start();
                 minHeight = maxHeight + 1;
                 maxHeight += incHeight;
             }

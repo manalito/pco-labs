@@ -2,19 +2,30 @@
 #include "computethread.h"
 #include <QWidget>
 
+ComputeThread::ComputeThread(){
+}
 
+ComputeThread::ComputeThread(int halfHeight, int halfWidth,
+                 double scaleFactor, bool &restart, bool &abort, QImage* image,
+                 const int Limit, const int MaxIterations, double centerX,
+                             double centerY, uint* colormap, int colormapsize)
+    : halfWidth(halfWidth), halfHeight(halfHeight), MaxIterations(MaxIterations),
+      scaleFactor(scaleFactor), centerX(centerX), centerY(centerY), colormap(colormap),
+      ColormapSize(ColormapSize), image(image), restart(&restart), abort(&abort), Limit(Limit){
+
+}
 void ComputeThread::compute(){
-    for (int y = minHeight; y < maxHeight; ++y) {
+    for (int y = -halfHeight; y < +halfHeight; ++y) {
         if (restart)
             break;
         if (abort)
             return;
 
         QRgb *scanLine =
-                reinterpret_cast<QRgb *>(image->scanLine(y + maxHeight));
+                reinterpret_cast<QRgb *>(image->scanLine(y + halfHeight));
         double ay = centerY + (y * scaleFactor);
 
-        for (int x = minWidth; x < maxWidth; ++x) {
+        for (int x = -halfWidth; x < +halfWidth; ++x) {
             double ax = centerX + (x * scaleFactor);
             double a1 = ax;
             double b1 = ay;
@@ -46,13 +57,11 @@ void ComputeThread::run() {
     this->compute();
 }
 
-void ComputeThread::setArgs(int minHeight, int maxHeight, int halfWidth,
+void ComputeThread::setArgs(int halfHeight, int halfWidth,
                             double scaleFactor, bool &restart, bool &abort, QImage* image,
-                            const int Limit, const int MaxIterations,  double centerX, double centerY, uint* colormap){
-    this->minHeight = minHeight;
-    this->maxHeight = maxHeight;
-    this->minWidth  = -halfWidth;
-    this->maxWidth  = halfWidth;
+                            const int Limit, const int MaxIterations,  double centerX, double centerY, uint* colormap, int colormapsize){
+    this->halfHeight = halfHeight;
+    this->halfWidth  = halfWidth;
     this->scaleFactor = scaleFactor;
     this->restart = &restart;
     this->abort = &abort;
@@ -62,5 +71,6 @@ void ComputeThread::setArgs(int minHeight, int maxHeight, int halfWidth,
     this->centerX = centerX;
     this->centerY = centerY;
     this->colormap = colormap;
+    this->ColormapSize = colormapsize;
 
 }
