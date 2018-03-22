@@ -6,15 +6,16 @@ ComputeThread::ComputeThread(){
 }
 
 ComputeThread::ComputeThread(int halfHeight, int halfWidth,
-                 double scaleFactor, bool &restart, bool &abort, QImage* image,
-                 const int Limit, const int MaxIterations, double centerX,
-                             double centerY, uint* colormap, int colormapsize)
+                 double scaleFactor, const bool &restart, const bool &abort, QImage* image,
+                 const int MaxIterations, double centerX,
+                             double centerY, uint colormap[], int ColormapSize)
     : halfWidth(halfWidth), halfHeight(halfHeight), MaxIterations(MaxIterations),
       scaleFactor(scaleFactor), centerX(centerX), centerY(centerY), colormap(colormap),
-      ColormapSize(ColormapSize), image(image), restart(&restart), abort(&abort), Limit(Limit){
+      ColormapSize(ColormapSize), image(image), restart(&restart), abort(&abort){
 
 }
 void ComputeThread::compute(){
+    const int Limit = 4;
     for (int y = -halfHeight; y < +halfHeight; ++y) {
         if (restart)
             break;

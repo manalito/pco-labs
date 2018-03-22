@@ -8,8 +8,8 @@ private:
     int halfHeight;
     int halfWidth;
     double scaleFactor;
-    bool* restart;
-    bool* abort;
+    const bool* restart;
+    const bool* abort;
     double centerX;
     double centerY;
 
@@ -22,10 +22,9 @@ private:
 
 public:
     ComputeThread();
-    ComputeThread(int halfHeight, int halfWidth,
-                     double scaleFactor, bool &restart, bool &abort, QImage* image,
-                     const int Limit, const int MaxIterations, double centerX,
-                     double centerY, uint* colormap, int colormapsize);
+    ComputeThread(int halfHeight, int halfWidth, double scaleFactor,const bool &restart,
+                  const bool &abort, QImage* image, int MaxIterations, double centerX,
+                  double centerY, uint colormap[], int colormapsize);
     void compute();
     void setArgs(int halfHeight, int halfWidth,
                  double scaleFactor, bool &restart, bool &abort, QImage* image,

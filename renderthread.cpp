@@ -39,7 +39,6 @@
 ****************************************************************************/
 
 #include "renderthread.h"
-#include "computethread.h"
 
 #include <QtWidgets>
 
@@ -51,10 +50,8 @@ RenderThread::RenderThread(QObject *parent)
 {
     restart = false;
     abort = false;
-
     for (int i = 0; i < ColormapSize; ++i)
         colormap[i] = rgbFromWaveLength(380.0 + (i * 400.0 / ColormapSize));
-    workers.resize(THREAD_COUNT);
 }
 
 RenderThread::~RenderThread()
@@ -63,12 +60,10 @@ RenderThread::~RenderThread()
     abort = true;
     condition.wakeOne();
     mutex.unlock();
-
     wait();
 }
 
-void RenderThread::render(double centerX, double centerY, double scaleFactor,
-                          QSize resultSize)
+void RenderThread::render(double centerX, double centerY, double scaleFactor, QSize resultSize)
 {
     QMutexLocker locker(&mutex);
 
@@ -89,6 +84,7 @@ void RenderThread::run()
 {
     forever {
         mutex.lock();
+
         QSize resultSize = this->resultSize;
         double scaleFactor = this->scaleFactor;
         double centerX = this->centerX;
@@ -98,53 +94,39 @@ void RenderThread::run()
         int halfWidth = resultSize.width() / 2;
         int halfHeight = resultSize.height() / 2;
 
+        int MaxIterations;
+        const int NbThreads = QThread::idealThreadCount();
+        ComputeThread* computeThreads[1];
 
         const int NumPasses = 8;
         int pass = 0;
-
-
         while (pass < NumPasses) {
-            const int MaxIterations = (1 << (2 * pass + 6)) + 32;
+            if(abort){
+                for(int i = 0; i< 1; ++i){
+                    computeThreads[i]->wait();
+                }
+                return;
+            }
+
+            MaxIterations = (1 << (2 * pass + 6)) + 32;
             QImage image(resultSize, QImage::Format_RGB32);
 
             QTime startTime = QTime::currentTime();
-
-            const int Limit = 4;
-
-            int nbThreads = 1;//= QThread::idealThreadCount();
-
-            int minHeight = -halfHeight;
-            int incHeight = halfHeight / nbThreads * 2;
-            int maxHeight = minHeight + incHeight;
-
-
-            ComputeThread threads[nbThreads];
-
-            ComputeThread* ct1;
-            for(int i = 0; i < nbThreads; ++i){
-                ct1 = new ComputeThread(halfHeight, halfWidth , scaleFactor,
-                                   restart, abort, &image, Limit, MaxIterations, centerX, centerY, colormap, ColormapSize);
-                ct1->start();
-                minHeight = maxHeight + 1;
-                maxHeight += incHeight;
+            for(int i = 0; i < NbThreads; ++i){
+                computeThreads[i] = new ComputeThread(halfWidth, halfHeight, MaxIterations, scaleFactor, centerX, centerY, colormap, ColormapSize, &image, &restart, &abort, i, NbThreads);
+                computeThreads[i]->start();
             }
-
-
-
-            for(int i = 0; i < nbThreads; ++i){
-                threads[i].wait();
+            for(int i = 0; i< NbThreads; ++i){
+                computeThreads[i]->wait();
             }
-
 
             QTime endTime = QTime::currentTime();
             std::cout << "Time for pass " << pass << " (in ms) : " << startTime.msecsTo(endTime) << std::endl;
 
-                if (!restart)
-                    emit renderedImage(image, scaleFactor);
-
-                ++pass;
+            if (!restart)
+                emit renderedImage(image, scaleFactor);
+            ++pass;
         }
-
         mutex.lock();
         if (!restart)
             condition.wait(&mutex);
