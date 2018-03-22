@@ -1,32 +1,32 @@
+#include "computeThread.h"
 
-#include "computethread.h"
-#include <QWidget>
+ComputeThread::ComputeThread(){}
 
-ComputeThread::ComputeThread(){
-}
 
-ComputeThread::ComputeThread(int halfHeight, int halfWidth,
-                 double scaleFactor, const bool &restart, const bool &abort, QImage* image,
-                 const int MaxIterations, double centerX,
-                             double centerY, uint colormap[], int ColormapSize)
-    : halfWidth(halfWidth), halfHeight(halfHeight), MaxIterations(MaxIterations),
-      scaleFactor(scaleFactor), centerX(centerX), centerY(centerY), colormap(colormap),
-      ColormapSize(ColormapSize), image(image), restart(&restart), abort(&abort){
+ComputeThread::ComputeThread(int halfWidth, int halfHeight, int MaxIterations,
+                             double scaleFactor, double centerX, double centerY, uint colormap[],
+                             int ColormapSize, QImage* image, bool* restart, bool* abort,
+                             int threadId, const int NbThreads):
+    halfWidth(halfWidth), halfHeight(halfHeight), MaxIterations(MaxIterations),
+    scaleFactor(scaleFactor), centerX(centerX), centerY(centerY), colormap(colormap),
+    ColormapSize(ColormapSize), image(image), restart(restart), abort(abort), threadId(threadId), NbThreads(NbThreads)
+{}
 
-}
-void ComputeThread::compute(){
+void ComputeThread::run(){
+
     const int Limit = 4;
-    for (int y = -halfHeight; y < +halfHeight; ++y) {
-        if (restart)
+    for (int y = -halfHeight + threadId; y < halfHeight; y+=NbThreads) {
+        if (*restart) {
             break;
-        if (abort)
+        }
+        if (*abort) {
             return;
-
-        QRgb *scanLine =
-                reinterpret_cast<QRgb *>(image->scanLine(y + halfHeight));
+        }
+        QRgb *scanLine = reinterpret_cast<QRgb *>(image->scanLine(y + halfHeight));
         double ay = centerY + (y * scaleFactor);
 
-        for (int x = -halfWidth; x < +halfWidth; ++x) {
+        for (int x = -halfWidth; x < halfWidth; ++x) {
+
             double ax = centerX + (x * scaleFactor);
             double a1 = ax;
             double b1 = ay;
@@ -53,25 +53,4 @@ void ComputeThread::compute(){
             }
         }
     }
-}
-void ComputeThread::run() {
-    this->compute();
-}
-
-void ComputeThread::setArgs(int halfHeight, int halfWidth,
-                            double scaleFactor, bool &restart, bool &abort, QImage* image,
-                            const int Limit, const int MaxIterations,  double centerX, double centerY, uint* colormap, int colormapsize){
-    this->halfHeight = halfHeight;
-    this->halfWidth  = halfWidth;
-    this->scaleFactor = scaleFactor;
-    this->restart = &restart;
-    this->abort = &abort;
-    this->image = image;
-    this->Limit = Limit;
-    this->MaxIterations = (int)MaxIterations;
-    this->centerX = centerX;
-    this->centerY = centerY;
-    this->colormap = colormap;
-    this->ColormapSize = colormapsize;
-
 }
