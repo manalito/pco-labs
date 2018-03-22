@@ -13,7 +13,6 @@ public:
     ComputeThread(int halfWidth, int halfHeight, int MaxIterations,
                   double scaleFactor, double centerX, double centerY, uint colormap[],
                   int ColormapSize, QImage* image, bool* restart, bool* abort, int threadId, const int NbThreads);
-
 private:
     int halfWidth;
     int halfHeight;
