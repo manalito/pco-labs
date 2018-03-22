@@ -95,6 +95,8 @@ void RenderThread::run()
         int halfHeight = resultSize.height() / 2;
 
         int MaxIterations;
+
+        // Retrieve the number of logical cores available on the system
         const int NbThreads = QThread::idealThreadCount();
         ComputeThread* computeThreads[NbThreads];
 
@@ -116,8 +118,12 @@ void RenderThread::run()
                 computeThreads[i] = new ComputeThread(halfWidth, halfHeight, MaxIterations, scaleFactor, centerX, centerY, colormap, ColormapSize, &image, &restart, &abort, i, NbThreads);
                 computeThreads[i]->start();
             }
+
+            // Wait all the running threads
+            // then delete them
             for(int i = 0; i< NbThreads; ++i){
                 computeThreads[i]->wait();
+                delete computeThreads[i];
             }
 
             QTime endTime = QTime::currentTime();

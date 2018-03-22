@@ -1,10 +1,17 @@
+/*
+ *
+ * @author Gallay Romain, Siu Aurélien
+ *
+ */
+
 #include "computeThread.h"
 
+// Required default constructor
 ComputeThread::ComputeThread(){}
 
 
 ComputeThread::ComputeThread(int halfWidth, int halfHeight, int MaxIterations,
-                             double scaleFactor, double centerX, double centerY, uint colormap[],
+                             double scaleFactor, double centerX, double centerY, uint* colormap,
                              int ColormapSize, QImage* image, bool* restart, bool* abort,
                              int threadId, const int NbThreads):
     halfWidth(halfWidth), halfHeight(halfHeight), MaxIterations(MaxIterations),
@@ -15,6 +22,7 @@ ComputeThread::ComputeThread(int halfWidth, int halfHeight, int MaxIterations,
 void ComputeThread::run(){
 
     const int Limit = 4;
+
     for (int y = -halfHeight + threadId; y < halfHeight; y+=NbThreads) {
         if (*restart) {
             break;
