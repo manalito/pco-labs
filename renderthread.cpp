@@ -96,13 +96,13 @@ void RenderThread::run()
 
         int MaxIterations;
         const int NbThreads = QThread::idealThreadCount();
-        ComputeThread* computeThreads[1];
+        ComputeThread* computeThreads[NbThreads];
 
         const int NumPasses = 8;
         int pass = 0;
         while (pass < NumPasses) {
             if(abort){
-                for(int i = 0; i< 1; ++i){
+                for(int i = 0; i< NbThreads; ++i){
                     computeThreads[i]->wait();
                 }
                 return;
