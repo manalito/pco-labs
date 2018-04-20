@@ -76,3 +76,7 @@ void Locomotive::inverserSens()
 {
     inverser_sens_loco(_numero);
 }
+
+void Locomotive::run(){
+    demarrer();
+}

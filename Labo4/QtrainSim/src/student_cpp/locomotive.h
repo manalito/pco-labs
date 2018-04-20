@@ -1,10 +1,10 @@
 #ifndef LOCOMOTIVE_H
 #define LOCOMOTIVE_H
 
+#include <QThread>
 #include <QString>
 
-class Locomotive
-{
+class Locomotive {
 
 public:
 
