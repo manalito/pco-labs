@@ -8,47 +8,26 @@
 #include "locomotive.h"
 #include "ctrain_handler.h"
 
-/*
-* Classe gérant la zone critique de la maquette
- *
- * Les deux loco avertissent quand la zone est occupée, mais elles
- * ont un comportement différent dans celle-ci. Si la zone est libre
- * lorsque la loco 1 arrive, elle entre normalement et empêche la 2
- * d'y entrer. Dans l'autre situation, si la 2 entre dans la zone critique
- * avant la 1, cela ne bloque pas la 1, mais active la dérivation, donc la
- * mise en parallèle des deux loco.
- *
- * A la sortie de la zone critique, la loco 2 remet la zone comme étant
- * libre (dans tous les cas) et pour la loco 1, elle le fait uniquement
- * si elle n'a pas été déviée. Donc pas de problème de concurrence sur la
- * variable libre lorsque les deux loco sont en parallèle dans la zone critique
- *
- * Si la loco 2 a été arrêtée, elle met la zone comme non-libre seulement après
- * être repartie, donc après que la loco 1 ait libéré la zone. Il n'y a donc
- * ici non plus de problème de concurrence sur la variable libre.
- *
- *
- */
 class Section{
 private:
     QMutex* mutex;
-    QSemaphore* sem;
+    QSemaphore* semaphore;
     bool libre;
-    QPair<int, int> aiguillageCrit1;
-    QPair<int, int> aiguillageCrit2;
+
     bool derivation;
-    int numTrain1;
-    int numTrain2;
+    int numTrain1, numTrain2;
 
 public:
-    Section(QPair<int, int> aiguillageCrit1,
-                 QPair<int, int> aiguillageCrit2, QSemaphore* sem, int numTrain1, int numTrain2){
+    QPair<int, int> CriticSwitch1;
+    QPair<int, int> CriticSwitch2;
+    Section(QPair<int, int> CriticSwitch1, QPair<int, int> CriticSwitch2,
+            QSemaphore* sem, int numTrain1, int numTrain2){
         libre = true;
         derivation = false;
         mutex = new QMutex();
-        this->sem = sem;
-        this->aiguillageCrit1 = aiguillageCrit1;
-        this->aiguillageCrit2 = aiguillageCrit2;
+        this->semaphore = sem;
+        this->CriticSwitch1 = CriticSwitch1;
+        this->CriticSwitch2 = CriticSwitch2;
         this->numTrain1 = numTrain1;
         this->numTrain2 = numTrain2;
     }
@@ -56,12 +35,16 @@ public:
     bool peutEntrer(int numLocomotive){
 
         afficher_message(qPrintable(QString("Entering the critical Area!")));
+
         mutex->lock();
+
         bool resultat = false;
         if(libre){
             if(numLocomotive == numTrain1){
-                diriger_aiguillage(aiguillageCrit1.first, TOUT_DROIT, 0);
-                diriger_aiguillage(aiguillageCrit1.second, TOUT_DROIT, 0);
+                diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
+                diriger_aiguillage(CriticSwitch1.second, DEVIE, 0);
+                diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
+                diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
             }
             bloquer();
             libre = false;
@@ -69,9 +52,18 @@ public:
         }
         else{
             if(numLocomotive == numTrain1){
-                diriger_aiguillage(aiguillageCrit2.first, TOUT_DROIT, 0);
-                diriger_aiguillage(aiguillageCrit2.second, TOUT_DROIT, 0);
+
+                diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
+                diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
+
                 derivation = true;
+            }
+            if(numLocomotive == numTrain2){
+
+                diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
+                diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
+
+
             }
         }
         mutex->unlock();
@@ -79,11 +71,12 @@ public:
     }
 
     void sortir(int numLocomotive){
+        mutex->lock();
         if(numLocomotive == numTrain1){
-            diriger_aiguillage(aiguillageCrit1.first, DEVIE, 0);
-            diriger_aiguillage(aiguillageCrit1.second, DEVIE, 0);
-            diriger_aiguillage(aiguillageCrit2.first, DEVIE, 0);
-            diriger_aiguillage(aiguillageCrit2.second, DEVIE, 0);
+            diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
+            diriger_aiguillage(CriticSwitch1.second, DEVIE, 0);
+            diriger_aiguillage(CriticSwitch2.first, TOUT_DROIT, 0);
+            diriger_aiguillage(CriticSwitch2.second, TOUT_DROIT, 0);
 
             if(!derivation){
                 libre = true;
@@ -92,10 +85,14 @@ public:
             derivation = false;
         }
         if(numLocomotive == numTrain2){
+            diriger_aiguillage(CriticSwitch1.first, TOUT_DROIT, 0);
+            diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
+
             libre = true;
             liberer();
 
         }
+        mutex->unlock();
         afficher_message(qPrintable(QString("Exiting the critical Area!")));
     }
 
@@ -104,11 +101,11 @@ public:
     }
 
     void bloquer(){
-        sem->acquire();
+        semaphore->acquire();
     }
 
     void liberer(){
-        sem->release();
+        semaphore->release();
     }
 };
 

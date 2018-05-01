@@ -126,6 +126,8 @@ HEADERS += \
     src/voieaiguillageenroule.h \
     src/voieaiguillagetriple.h \
     src/ctrain_handler.h \
-    src/student_cpp/locomotive.h
+    src/student_cpp/locomotive.h \
+    src/student_cpp/section.h \
+    src/student_cpp/worker.h
 
 OTHER_FILES += infosVoies.txt

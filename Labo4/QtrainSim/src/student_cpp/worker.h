@@ -23,41 +23,41 @@
  * */
 class Worker : public QThread{
 private:
-    Locomotive* locomotive;
-    QList<int> parcours;
-    QPair<int, int> capteurCritique;
-    Section* zoneCritique;
-    bool sens; //true = marche avant
-    int nbTour; // Utile pour changer de sens après 2 tours
-    int numTrain2;
+    Locomotive* loco;
+    QList<int> course;
+    QPair<int, int> criticalContact;
+    Section* section;
+    bool sens; //true = forward
+    int turnNumber;
+    int numNoPriorityLoco;
 public:
 
     //Initialisation de la locomotive
-    Worker(int id, int vitesse, QPair<int, int> departCapteur,
-                     bool phare, QList<int> parcours,
-                     QPair<int, int> capteurCritique,
-                     Section* zoneCritique, int numTrain2){
-        locomotive = new Locomotive();
-        locomotive->fixerNumero(id);
-        locomotive->fixerVitesse(vitesse);
-        locomotive->fixerPosition(departCapteur.first, departCapteur.second);
-        if(phare) locomotive->allumerPhares();
-        this->parcours = parcours;
-        this->capteurCritique = capteurCritique;
-        this->zoneCritique = zoneCritique;
+    Worker(int id, int vitesse, QPair<int, int> startingPoint,
+                     bool phare, QList<int> course,
+                     QPair<int, int> criticalContact,
+                     Section* section, int numNoPriorityLoco){
+        loco = new Locomotive();
+        loco->fixerNumero(id);
+        loco->fixerVitesse(vitesse);
+        loco->fixerPosition(startingPoint.first, startingPoint.second);
+        if(phare) loco->allumerPhares();
+        this->course = course;
+        this->criticalContact = criticalContact;
+        this->section = section;
+        this->numNoPriorityLoco = numNoPriorityLoco;
         sens = true;
-        nbTour = 0;
-        this->numTrain2 = numTrain2;
-        locomotive->afficherMessage("Ready!");
+        turnNumber = 0;
+        loco->afficherMessage("Ready!");
     }
 
     void depart(){
-        locomotive->demarrer();
-        locomotive->afficherMessage(qPrintable(QString("The engine is starting!")));
+        loco->demarrer();
+        loco->afficherMessage(qPrintable(QString("The engine is starting!")));
     }
     void arreter(){
-        locomotive->arreter();
-        locomotive->afficherMessage(qPrintable(QString("The engine is stopping!")));
+        loco->arreter();
+        loco->afficherMessage(qPrintable(QString("The engine is stopping!")));
     }
 
     void run() Q_DECL_OVERRIDE{
@@ -69,62 +69,72 @@ public:
          */
         int pos = 0;
         while(true){
-            contact(parcours.at(pos));
+            waitContact(course.at(pos));
             // Action à l'entrée de la zone critique
-            if(parcours.at(pos) == capteurCritique.first ||
-                    parcours.at(pos) == capteurCritique.second){
+            if(course.at(pos) == criticalContact.first ||
+                    course.at(pos) == criticalContact.second){
                 // Action spéciale pour la loco 2 si la zone est occupée:
                 // elle s'arrête et attend que l'autre sorte de la zone
-               if(!zoneCritique->peutEntrer(locomotive->numero()) &&
-                       locomotive->numero() == numTrain2){
+               if(!section->peutEntrer(loco->numero()) &&
+                       loco->numero() == numNoPriorityLoco){
                    arreter();
-                   zoneCritique->bloquer();
+                   section->bloquer();
                    // Avant de repartir, la loco 2 indique qu'elle entre dans la zone critique
-                   zoneCritique->setLibre(false);
+                   section->setLibre(false);
                    depart();
                }
-               while(true){
-                   pos = prochainePosition(pos);
-                   if(parcours.at(pos) == capteurCritique.first ||
-                           parcours.at(pos) == capteurCritique.second) break;
+               if(loco->numero() != numNoPriorityLoco){
+
+                    diriger_aiguillage(section->CriticSwitch2.second, DEVIE, 0);
                }
-               contact(parcours.at(pos));
-               zoneCritique->sortir(locomotive->numero());
+               while(true){
+                   pos = nextContact(pos);
+                   if(course.at(pos) == criticalContact.first ||
+                           course.at(pos) == criticalContact.second) break;
+               }
+               waitContact(course.at(pos));
+               section->sortir(loco->numero());
             }
-            pos = prochainePosition(pos);
+            pos = nextContact(pos);
         }
-        locomotive->afficherMessage(QString("Yeah, piece of cake for locomotive %1 !")
-                                    .arg(locomotive->numero()));
+        loco->afficherMessage(QString("Yeah, piece of cake for locomotive %1 !")
+                                    .arg(loco->numero()));
         arreter();
     }
 
-    int prochainePosition(int pos){
-        if(sens) pos++;
-        else pos--;
-        if(pos >= parcours.size()){
+    int nextContact(int pos){
+        if(sens){
+            pos++;
+        }else{
+            pos--;
+        }
+        if(pos >= course.size()){
            pos = 0;
-           nbTour++;
+           turnNumber++;
         }
         if(pos < 0){
-           pos = parcours.size() - 1;
-           nbTour++;
+           pos = course.size() - 1;
+           turnNumber++;
         }
-        if(nbTour == 2){
+        if(turnNumber == 2){
             sens = !sens;
-            nbTour = 0;
+            turnNumber = 0;
             // On saute un capteur lors du changement de sens, pour ne pas rester bloqué
-            pos = (sens ? 1 : parcours.size() - 2);
-            locomotive->inverserSens();
+            pos = (sens ? 1 : course.size() - 2);
+            loco->inverserSens();
         }
-
         return pos;
     }
 
-    void contact(int capteur){
-        attendre_contact(capteur);
+    bool getSens(){
+        return sens;
+    }
+
+    void waitContact(int contact){
+        attendre_contact(contact);
         afficher_message(qPrintable(QString("The engine no. %1 has reached contact no. %2.")
-                                    .arg(locomotive->numero()).arg(capteur)));
-        locomotive->afficherMessage(QString("I've reached contact no. %1.").arg(capteur));
+                                    .arg(loco->numero()).arg(contact)));
+        loco->afficherMessage(QString("I've reached contact no. %1.").arg(contact));
     }
 };
 

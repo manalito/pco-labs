@@ -33,8 +33,8 @@ int numTrain2 = 14;
  *
  * Utilisé uniquement en lecture
  */
-int vitesseLoco1 = 22;
-int vitesseLoco2 = 16;
+int vitesseLoco1 = 14;
+int vitesseLoco2 = 8;
 
 /*
 //Arret d'urgence
@@ -190,8 +190,8 @@ int cmain()
     afficher_message("Hit play to start the simulation...");
 
         //Zone critique locomotives
-        QPair<int, int> critique1 = QPair<int,int>(13, 19);
-        QPair<int, int> critique2 = QPair<int,int>(17, 24);
+        QPair<int, int> critique1 = QPair<int,int>(3, 10);
+        QPair<int, int> critique2 = QPair<int,int>(12, 5);
 
         //Choix de la maquette
         selection_maquette(MAQUETTE_B);
@@ -202,17 +202,17 @@ int cmain()
         parcours2 << 18 << 17 << 12 << 9 << 4 << 5 << 24 << 23;
 
         //Zone critique partagée
-        Section* zoneCritique = new Section(QPair<int, int>(4, 7),
+        Section* section = new Section(QPair<int, int>(4, 7),
                                                       QPair<int, int>(3, 8),
                                                       new QSemaphore(1), numTrain1, numTrain2);
 
         //Initialisation des locomotives
         locomotives.append(new Worker(numTrain1, vitesseLoco1,
                                                 QPair<int,int>(14,19), true,
-                                                parcours1, critique1, zoneCritique, numTrain2));
+                                                parcours1, critique1, section, numTrain2));
         locomotives.append(new Worker(numTrain2, vitesseLoco2,
                                                 QPair<int,int>(18,23), true,
-                                                parcours2, critique2, zoneCritique, numTrain2));
+                                                parcours2, critique2, section, numTrain2));
 
         //Initialisation des aiguillages pour loco 1
         diriger_aiguillage(14, TOUT_DROIT, 0);
