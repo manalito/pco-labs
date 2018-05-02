@@ -190,15 +190,16 @@ int cmain()
     afficher_message("Hit play to start the simulation...");
 
         //Zone critique locomotives
-        QPair<int, int> critique1 = QPair<int,int>(19, 13);
+        QPair<int, int> critique1 = QPair<int,int>(10, 3);
         QPair<int, int> critique2 = QPair<int,int>(12, 5);
 
         //Choix de la maquette
         selection_maquette(MAQUETTE_B);
 
         //Initialisation des parcours
-        QList<int> parcours1, parcours2;
+        QList<int> parcours1, parcours2, parcoursDev;
         parcours1 << 14 << 13 << 10 << 9 << 4 << 3 << 19;
+        parcoursDev << 14 << 13 << 10 << 11 << 6 << 3 << 19;
         parcours2 << 18 << 17 << 12 << 9 << 4 << 5 << 24 << 23;
 
         //Zone critique partagée

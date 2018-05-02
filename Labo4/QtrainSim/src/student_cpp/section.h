@@ -50,32 +50,13 @@ public:
 
         bool resultat = false;
         if(libre){
-            /*if(numLocomotive == numTrain1){
-                diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
-                diriger_aiguillage(CriticSwitch1.second, DEVIE, 0);
-                diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
-                diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
-            }*/
             bloquer();
             libre = false;
             resultat = true;
+        }else if (numLocomotive == numTrain1){
+            derivation = true;
         }
-        else{
-            if(numLocomotive == numTrain1){
-/*
-                diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
-                diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
-*/
-                derivation = true;
-            }
-            if(numLocomotive == numTrain2){
-/*
-                diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
-                diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
-*/
 
-            }
-        }
         mutex->unlock();
         return resultat;
     }
@@ -88,10 +69,10 @@ public:
             diriger_aiguillage(CriticSwitch2.first, TOUT_DROIT, 0);
             diriger_aiguillage(CriticSwitch2.second, TOUT_DROIT, 0);*/
 
-            if(!derivation){
+            //if(!derivation){
                 libre = true;
                 liberer();
-            }
+            //}
             derivation = false;
         }
         if(numLocomotive == numTrain2){
@@ -103,7 +84,7 @@ public:
 
         }
         mutex->unlock();
-        afficher_message(qPrintable(QString("Exiting the critical Area!").arg(numLocomotive)));
+        afficher_message(qPrintable(QString("Loco %1 exiting the critical Area!").arg(numLocomotive)));
     }
 
     void setLibre(bool val){
@@ -141,8 +122,8 @@ public:
             diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
             diriger_aiguillage(CriticSwitch2.first, TOUT_DROIT, 0);
         }else if (derivation){
-            diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
-            diriger_aiguillage(CriticSwitch2.first, TOUT_DROIT, 0);
+            diriger_aiguillage(CriticSwitch1.first, TOUT_DROIT, 0);
+            diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
         } else{
             diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
             diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
@@ -153,11 +134,11 @@ public:
         contact2->acquire();
 
         if(numeroTrain == numTrain2){
-            diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
-            diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
-        }else if (derivation){
             diriger_aiguillage(CriticSwitch1.second, DEVIE, 0);
             diriger_aiguillage(CriticSwitch2.second, TOUT_DROIT, 0);
+        }else if (derivation){
+            diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
+            diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
         } else{
             diriger_aiguillage(CriticSwitch1.second, DEVIE, 0);
             diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);

@@ -30,6 +30,7 @@ private:
     bool sens; //true = forward
     int turnNumber;
     int numNoPriorityLoco;
+    QList<int> courseDev;
 public:
 
     //Initialisation de la locomotive
@@ -61,6 +62,7 @@ public:
         loco->afficherMessage(qPrintable(QString("The engine is stopping!")));
     }
 
+
     void run() Q_DECL_OVERRIDE{
         depart();
 
@@ -87,12 +89,6 @@ public:
                     section->setLibre(false);
                     depart();
                 }
-                /*if(loco->numero() != numNoPriorityLoco){
-
-                    diriger_aiguillage(section->CriticSwitch2.second, DEVIE, 0);
-               }*/
-
-
 
                 if(sens){
                     section->changeSwitch1(loco->numero());
@@ -106,6 +102,7 @@ public:
                     if(section->loco1_inside_section){
                         arreter();
                         section->bloquer();
+                        section->setLibre(false);
                         depart();
                     }
                 }
@@ -122,14 +119,13 @@ public:
                     if(section->loco1_inside_section){
                         arreter();
                         section->bloquer();
+                        section->setLibre(false);
                         depart();
                     }
                     pos = nextContact(pos);
                 } else {
                     pos = nextContact(pos);
                 }
-
-
 
                 waitContact(course.at(pos));
                 section->sortir(loco->numero());
