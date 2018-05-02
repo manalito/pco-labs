@@ -23,8 +23,8 @@ static Locomotive locomotive2;
  *
  * Utilisé uniquement en lecture
  */
-int numTrain1 = 2;
-int numTrain2 = 14;
+int numTrain1 = 1;
+int numTrain2 = 2;
 
 /* La vitesse des locomotives peuvent valoir n'importe quelle valeur
  * dans la simulation (tant que l'inertie est désactivée). Lors de
@@ -33,7 +33,7 @@ int numTrain2 = 14;
  *
  * Utilisé uniquement en lecture
  */
-int vitesseLoco1 = 14;
+int vitesseLoco1 = 10;
 int vitesseLoco2 = 8;
 
 /*
@@ -190,7 +190,7 @@ int cmain()
     afficher_message("Hit play to start the simulation...");
 
         //Zone critique locomotives
-        QPair<int, int> critique1 = QPair<int,int>(3, 10);
+        QPair<int, int> critique1 = QPair<int,int>(19, 13);
         QPair<int, int> critique2 = QPair<int,int>(12, 5);
 
         //Choix de la maquette
@@ -202,9 +202,9 @@ int cmain()
         parcours2 << 18 << 17 << 12 << 9 << 4 << 5 << 24 << 23;
 
         //Zone critique partagée
-        Section* section = new Section(QPair<int, int>(4, 7),
-                                                      QPair<int, int>(3, 8),
-                                                      new QSemaphore(1), numTrain1, numTrain2);
+        Section* section = new Section(QPair<int, int>(7, 4),
+                                                      QPair<int, int>(8, 3),
+                                                     1, numTrain1, numTrain2);
 
         //Initialisation des locomotives
         locomotives.append(new Worker(numTrain1, vitesseLoco1,

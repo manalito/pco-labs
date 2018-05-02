@@ -34,9 +34,10 @@ public:
 
     //Initialisation de la locomotive
     Worker(int id, int vitesse, QPair<int, int> startingPoint,
-                     bool phare, QList<int> course,
-                     QPair<int, int> criticalContact,
-                     Section* section, int numNoPriorityLoco){
+           bool phare, QList<int> course,
+           QPair<int, int> criticalContact,
+           Section* section, int numNoPriorityLoco){
+
         loco = new Locomotive();
         loco->fixerNumero(id);
         loco->fixerVitesse(vitesse);
@@ -73,32 +74,71 @@ public:
             // Action à l'entrée de la zone critique
             if(course.at(pos) == criticalContact.first ||
                     course.at(pos) == criticalContact.second){
+                section->locoInside(loco->numero());
+
                 // Action spéciale pour la loco 2 si la zone est occupée:
                 // elle s'arrête et attend que l'autre sorte de la zone
-               if(!section->peutEntrer(loco->numero()) &&
-                       loco->numero() == numNoPriorityLoco){
-                   arreter();
-                   section->bloquer();
-                   // Avant de repartir, la loco 2 indique qu'elle entre dans la zone critique
-                   section->setLibre(false);
-                   depart();
-               }
-               if(loco->numero() != numNoPriorityLoco){
+                //bool locoPeutEntrer = !section->peutEntrer(loco->numero());
+                if(!section->peutEntrer(loco->numero()) &&
+                        loco->numero() == numNoPriorityLoco){
+                    arreter();
+                    section->bloquer();
+                    // Avant de repartir, la loco 2 indique qu'elle entre dans la zone critique
+                    section->setLibre(false);
+                    depart();
+                }
+                /*if(loco->numero() != numNoPriorityLoco){
 
                     diriger_aiguillage(section->CriticSwitch2.second, DEVIE, 0);
-               }
-               while(true){
-                   pos = nextContact(pos);
-                   if(course.at(pos) == criticalContact.first ||
-                           course.at(pos) == criticalContact.second) break;
-               }
-               waitContact(course.at(pos));
-               section->sortir(loco->numero());
+               }*/
+
+
+
+                if(sens){
+                    section->changeSwitch1(loco->numero());
+                }else{
+                    section->changeSwitch2(loco->numero());
+                }
+                pos = nextContact(pos);
+
+                if(loco->numero() == numNoPriorityLoco){
+                    waitContact(course.at(pos));
+                    if(section->loco1_inside_section){
+                        arreter();
+                        section->bloquer();
+                        depart();
+                    }
+                }
+                pos = nextContact(pos);
+
+                if(sens){
+                    section->changeSwitch2(loco->numero());
+                }else{
+                    section->changeSwitch1(loco->numero());
+                }
+
+                if(loco->numero() == numNoPriorityLoco){
+                    waitContact(course.at(pos));
+                    if(section->loco1_inside_section){
+                        arreter();
+                        section->bloquer();
+                        depart();
+                    }
+                    pos = nextContact(pos);
+                } else {
+                    pos = nextContact(pos);
+                }
+
+
+
+                waitContact(course.at(pos));
+                section->sortir(loco->numero());
+                section->locoOutside(loco->numero());
             }
             pos = nextContact(pos);
         }
         loco->afficherMessage(QString("Yeah, piece of cake for locomotive %1 !")
-                                    .arg(loco->numero()));
+                              .arg(loco->numero()));
         arreter();
     }
 
@@ -109,12 +149,12 @@ public:
             pos--;
         }
         if(pos >= course.size()){
-           pos = 0;
-           turnNumber++;
+            pos = 0;
+            turnNumber++;
         }
         if(pos < 0){
-           pos = course.size() - 1;
-           turnNumber++;
+            pos = course.size() - 1;
+            turnNumber++;
         }
         if(turnNumber == 2){
             sens = !sens;
