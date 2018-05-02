@@ -69,10 +69,10 @@ public:
             diriger_aiguillage(CriticSwitch2.first, TOUT_DROIT, 0);
             diriger_aiguillage(CriticSwitch2.second, TOUT_DROIT, 0);*/
 
-            //if(!derivation){
+            if(!derivation){
                 libre = true;
                 liberer();
-            //}
+            }
             derivation = false;
         }
         if(numLocomotive == numTrain2){
