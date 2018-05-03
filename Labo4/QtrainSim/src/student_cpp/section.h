@@ -36,11 +36,9 @@ public:
             if(locoNumber == loco1Number){
 
                 if(deviation){
-                    diriger_aiguillage(8, DEVIE, 0);
-                    diriger_aiguillage(7, TOUT_DROIT,  0);
+                    diriger_aiguillage(5, DEVIE, 0);
                 } else {
-                    diriger_aiguillage(8, DEVIE, 0);
-                    diriger_aiguillage(7, DEVIE,  0);
+                    diriger_aiguillage(5, TOUT_DROIT, 0);
                 }
             } else if(locoNumber == loco2Number){
                 diriger_aiguillage(8, TOUT_DROIT, 0);

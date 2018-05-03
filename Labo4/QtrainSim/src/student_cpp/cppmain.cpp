@@ -33,8 +33,8 @@ int numTrain2 = 2;
  *
  * Utilisé uniquement en lecture
  */
-int vitesseLoco1 = 14;
-int vitesseLoco2 = 9;
+int vitesseLoco1 = 13;
+int vitesseLoco2 = 10;
 
 /*
 //Arret d'urgence
@@ -66,21 +66,21 @@ int cmain()
 
         //Zone critique locomotives
         QList<int> critique1, critique2;
-        critique1 << 13 << 10 << 9 << 4 << 3 << 19;
-        critique2 << 17 << 12 << 9 << 4 << 5 << 24;
+        critique1 << 13 << 10 << 11 << 6 << 3 << 19;
+        critique2 << 17 << 12 << 11 << 6 << 5 << 24;
 
         //Depart locomotives
-        QPair<int, int> start1 = QPair<int,int>(19, 3);
-        QPair<int, int> start2 = QPair<int,int>(23, 24);
+        QPair<int, int> start1 = QPair<int,int>(13, 14);
+        QPair<int, int> start2 = QPair<int,int>(18, 23);
 
         //Choix de la maquette
         selection_maquette(MAQUETTE_B);
 
         //Initialisation des parcours
         QList<int> parcours1, parcours1deviation, parcours2;
-        parcours1 << 14 << 13 << 10 << 9 << 4 << 3 << 19;
-        parcours1deviation << 14 << 13 << 10 << 11 << 6 << 3 << 19;
-        parcours2 << 18 << 17 << 12 << 9 << 4 << 5 << 24 << 23;
+        parcours1 << 14 << 13 << 10 << 11 << 6 << 3 << 19;
+        parcours1deviation << 14 << 13 << 7 << 2 << 1 << 19;
+        parcours2 << 18 << 17 << 12 << 11 << 6 << 5 << 24 << 23;
 
         //Zone critique partagée
         Section* section = new Section(numTrain1, numTrain2);
@@ -100,14 +100,18 @@ int cmain()
         diriger_aiguillage(10, TOUT_DROIT, 0);
         diriger_aiguillage(5,  TOUT_DROIT, 0);
         diriger_aiguillage(9,  DEVIE, 0);
-        diriger_aiguillage(1,  TOUT_DROIT, 0);
+        diriger_aiguillage(1,  DEVIE, 0);
         diriger_aiguillage(13, DEVIE,  0);
+        diriger_aiguillage(6, TOUT_DROIT, 0);
+        diriger_aiguillage(2, TOUT_DROIT, 0);
 
         //Initialisation des aiguillages pour loco 2
         diriger_aiguillage(12, TOUT_DROIT, 0);
         diriger_aiguillage(11, TOUT_DROIT, 0);
         diriger_aiguillage(16, TOUT_DROIT, 0);
         diriger_aiguillage(15, TOUT_DROIT, 0);
+        diriger_aiguillage(7, TOUT_DROIT, 0);
+        diriger_aiguillage(4, TOUT_DROIT, 0);
 
         //Lancement du messenger
         messenger* m = new messenger(locomotives.at(0), locomotives.at(1));
