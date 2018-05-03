@@ -4,108 +4,123 @@
 #include <QList>
 #include <QString>
 #include <QMutex>
+#include <QSemaphore>
 
 #include "locomotive.h"
 #include "ctrain_handler.h"
 
 class Section{
 private:
-    QMutex* mutex;
-    QSemaphore* semaphore;
-    bool libre;
-
-    bool derivation;
-    int numTrain1, numTrain2;
+    int loco1Number;
+    int loco2Number;
+    QMutex* m1 = new QMutex();
+    QMutex* m2 = new QMutex();
+    QSemaphore* busy = new QSemaphore(1);
+    QSemaphore* switch1 = new QSemaphore(1);
+    QSemaphore* switch2 = new QSemaphore(1);
+    bool aboutToCrossSwitch1 = false;
+    bool loco1Inside = false;
+    bool aboutToCrossSwitch2 = false;
+    bool loco2Inside = false;
 
 public:
-    QPair<int, int> CriticSwitch1;
-    QPair<int, int> CriticSwitch2;
-    Section(QPair<int, int> CriticSwitch1, QPair<int, int> CriticSwitch2,
-            QSemaphore* sem, int numTrain1, int numTrain2){
-        libre = true;
-        derivation = false;
-        mutex = new QMutex();
-        this->semaphore = sem;
-        this->CriticSwitch1 = CriticSwitch1;
-        this->CriticSwitch2 = CriticSwitch2;
-        this->numTrain1 = numTrain1;
-        this->numTrain2 = numTrain2;
+
+    Section(int loco1Number, int loco2Number){
+        this->loco1Number = loco1Number;
+        this->loco2Number = loco2Number;
     }
 
-    bool peutEntrer(int numLocomotive){
+    void changeSwitch(bool sens, int locoNumber, bool deviation){
 
-        afficher_message(qPrintable(QString("Entering the critical Area!")));
+        if(sens){ // bottom switch
+            switch1->acquire();
 
-        mutex->lock();
+            if(locoNumber == loco1Number){
 
-        bool resultat = false;
-        if(libre){
-            if(numLocomotive == numTrain1){
-                diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
-                diriger_aiguillage(CriticSwitch1.second, DEVIE, 0);
-                diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
-                diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
+                if(deviation){
+                    afficher_message(qPrintable(QString("sw1, deriv")));
+                    diriger_aiguillage(8, DEVIE, 0);
+                    diriger_aiguillage(7, TOUT_DROIT,  0);
+                } else {
+                    afficher_message(qPrintable(QString("sw1, no deriv")));
+                    diriger_aiguillage(8, DEVIE, 0);
+                    diriger_aiguillage(7, DEVIE,  0);
+                }
+            } else if(locoNumber == loco2Number){
+                afficher_message(qPrintable(QString("Im about to cross switch1")));
+                diriger_aiguillage(8, TOUT_DROIT, 0);
+                diriger_aiguillage(7, DEVIE,  0);
             }
-            bloquer();
-            libre = false;
-            resultat = true;
-        }
-        else{
-            if(numLocomotive == numTrain1){
+            switch1->release();
 
-                diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
-                diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
+        } else { // top switch
+            switch2->acquire();
 
-                derivation = true;
+            if(locoNumber == loco1Number){
+
+                if(deviation){
+                    afficher_message(qPrintable(QString("sw2, deriv")));
+                    diriger_aiguillage(4, TOUT_DROIT, 0);
+                    diriger_aiguillage(3, DEVIE,  0);
+                } else {
+                    afficher_message(qPrintable(QString("sw2, no deriv")));
+                    diriger_aiguillage(4, DEVIE, 0);
+                    diriger_aiguillage(3, DEVIE,  0);
+                }
+            } else if(locoNumber == loco2Number){
+                afficher_message(qPrintable(QString("Im about to cross switch2")));
+                diriger_aiguillage(3, TOUT_DROIT, 0);
+                diriger_aiguillage(4, DEVIE,  0);
             }
-            if(numLocomotive == numTrain2){
-
-                diriger_aiguillage(CriticSwitch1.second, TOUT_DROIT, 0);
-                diriger_aiguillage(CriticSwitch2.second, DEVIE, 0);
-
-
-            }
-        }
-        mutex->unlock();
-        return resultat;
-    }
-
-    void sortir(int numLocomotive){
-        mutex->lock();
-        if(numLocomotive == numTrain1){
-            diriger_aiguillage(CriticSwitch1.first, DEVIE, 0);
-            diriger_aiguillage(CriticSwitch1.second, DEVIE, 0);
-            diriger_aiguillage(CriticSwitch2.first, TOUT_DROIT, 0);
-            diriger_aiguillage(CriticSwitch2.second, TOUT_DROIT, 0);
-
-            if(!derivation){
-                libre = true;
-                liberer();
-            }
-            derivation = false;
-        }
-        if(numLocomotive == numTrain2){
-            diriger_aiguillage(CriticSwitch1.first, TOUT_DROIT, 0);
-            diriger_aiguillage(CriticSwitch2.first, DEVIE, 0);
-
-            libre = true;
-            liberer();
+            switch2->release();
 
         }
-        mutex->unlock();
-        afficher_message(qPrintable(QString("Exiting the critical Area!")));
-    }
-
-    void setLibre(bool val){
-        libre = val;
     }
 
     void bloquer(){
-        semaphore->acquire();
+        busy->acquire();
+        afficher_message(qPrintable(QString("bloqued")));
     }
 
     void liberer(){
-        semaphore->release();
+        busy->release();
+        afficher_message(qPrintable(QString("released")));
+    }
+
+    void setaboutToCrossSwitch1(bool b){
+        aboutToCrossSwitch1 = b;
+    }
+
+    void setaboutToCrossSwitch2(bool b){
+        aboutToCrossSwitch2 = b;
+    }
+
+    void setloco1Inside(bool b){
+        loco1Inside = b;
+    }
+
+    void setloco2Inside(bool b){
+        loco2Inside = b;
+    }
+
+    bool getloco1Inside(){
+        return loco1Inside;
+    }
+
+    bool getloco2Inside(){
+        return loco2Inside;
+    }
+
+    bool getaboutToCrossSwitch1(){
+        return aboutToCrossSwitch1;
+    }
+
+    bool getaboutToCrossSwitch2(){
+        return aboutToCrossSwitch1;
+    }
+
+    void waitFreeSignal(){
+       busy->acquire();
     }
 };
 

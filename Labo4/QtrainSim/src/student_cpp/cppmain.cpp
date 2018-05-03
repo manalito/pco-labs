@@ -23,8 +23,8 @@ static Locomotive locomotive2;
  *
  * Utilisé uniquement en lecture
  */
-int numTrain1 = 2;
-int numTrain2 = 14;
+int numTrain1 = 1;
+int numTrain2 = 2;
 
 /* La vitesse des locomotives peuvent valoir n'importe quelle valeur
  * dans la simulation (tant que l'inertie est désactivée). Lors de
@@ -34,7 +34,7 @@ int numTrain2 = 14;
  * Utilisé uniquement en lecture
  */
 int vitesseLoco1 = 14;
-int vitesseLoco2 = 8;
+int vitesseLoco2 = 9;
 
 /*
 //Arret d'urgence
@@ -190,29 +190,36 @@ int cmain()
     afficher_message("Hit play to start the simulation...");
 
         //Zone critique locomotives
-        QPair<int, int> critique1 = QPair<int,int>(3, 10);
-        QPair<int, int> critique2 = QPair<int,int>(12, 5);
+        QList<int> critique1, critique2, critique1deviation;
+        critique1 << 13 << 10 << 9 << 4 << 3 << 19;
+        critique1deviation << 13 << 10 << 11 << 6 << 3 << 19;
+        critique2 << 17 << 12 << 9 << 4 << 5 << 24;
+
+        //Depart locomotives
+        QPair<int, int> start1 = QPair<int,int>(14, 19);
+        QPair<int, int> start2 = QPair<int,int>(18, 23);
 
         //Choix de la maquette
         selection_maquette(MAQUETTE_B);
 
         //Initialisation des parcours
-        QList<int> parcours1, parcours2;
+        QList<int> parcours1, parcours1deviation, parcours2;
         parcours1 << 14 << 13 << 10 << 9 << 4 << 3 << 19;
+        parcours1deviation << 14 << 13 << 10 << 11 << 6 << 3 << 19;
         parcours2 << 18 << 17 << 12 << 9 << 4 << 5 << 24 << 23;
 
         //Zone critique partagée
-        Section* section = new Section(QPair<int, int>(4, 7),
-                                                      QPair<int, int>(3, 8),
-                                                      new QSemaphore(1), numTrain1, numTrain2);
+        Section* section = new Section(numTrain1, numTrain2);
 
         //Initialisation des locomotives
-        locomotives.append(new Worker(numTrain1, vitesseLoco1,
-                                                QPair<int,int>(14,19), true,
-                                                parcours1, critique1, section, numTrain2));
-        locomotives.append(new Worker(numTrain2, vitesseLoco2,
-                                                QPair<int,int>(18,23), true,
-                                                parcours2, critique2, section, numTrain2));
+        locomotives.append(new Worker(numTrain1, vitesseLoco1, start1, true,
+                                      parcours1, critique1, section,
+                                      numTrain1, numTrain2, parcours1deviation,
+                                      critique1deviation));
+        locomotives.append(new Worker(numTrain2, vitesseLoco2, start2, true,
+                                      parcours2, critique2, section,
+                                      numTrain1, numTrain2, parcours1deviation,
+                                      critique1deviation));
 
         //Initialisation des aiguillages pour loco 1
         diriger_aiguillage(14, TOUT_DROIT, 0);
