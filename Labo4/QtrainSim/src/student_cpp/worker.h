@@ -97,7 +97,8 @@ public:
 
                 } else if (course.at(pos) == criticalContact.at(2)){
                     // 1st contact inside critical zone
-                    conflictManagment(true, !sens);
+                   conflictManagment(true, !sens);
+                    section->changeSwitch(!sens, loco->numero(), false);
 
                 } else if (course.at(pos) == criticalContact.at(3)){
                     // 2nd contact inside critical zone
@@ -113,16 +114,25 @@ public:
 
             } else if(loco->numero() == loco1Number){
 
+                if(section->getloco2Inside()){
+                    section->changeSwitch(sens, loco1Number, true);
+                }else{
+                     section->changeSwitch(sens, loco1Number, false);
+                }
                 if(derivation){
                     waitContact(courseDerivation.at(pos));
                 } else {
                     waitContact(course.at(pos));
+                    //section->changeSwitch(sens);
                 }
 
                 if(course.at(pos) == criticalContact.at(0)){
                     // about to enter the critical zone
                     section->setaboutToCrossSwitch1(true);
                     section->acquire();
+                    if(section->getloco2Inside() || otherLocoHasPriority){
+                        derivation = true;
+                    }
 
                 } else if (course.at(pos) == criticalContact.at(1)){
                     // entering the critical zone

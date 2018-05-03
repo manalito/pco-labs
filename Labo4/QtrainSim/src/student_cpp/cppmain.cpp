@@ -34,7 +34,7 @@ int numTrain2 = 2;
  * Utilisé uniquement en lecture
  */
 int vitesseLoco1 = 13;
-int vitesseLoco2 = 10;
+int vitesseLoco2 = 12;
 
 /*
 //Arret d'urgence
