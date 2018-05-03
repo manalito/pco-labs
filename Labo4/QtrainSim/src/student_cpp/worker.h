@@ -13,13 +13,14 @@ private:
     QList<int> course;
     QList<int> courseDerivation;
     QList<int> criticalContact;
-    QList<int> criticalDerivation; // useless
+    QPair<int, int> startingPoint;
     Section* section;
     bool sens; //true = forward
     int turnNumber;
     int loco1Number;
     int loco2Number;
     bool derivation = false;
+    bool otherLocoHasPriority;
 public:
 
     //Initialisation de la locomotive
@@ -29,7 +30,7 @@ public:
                  bool phare, QList<int> course,
                  QList<int> criticalContact,
                  Section* section, int loco1Number, int loco2Number,
-                 QList<int> courseDerivation, QList<int> criticalDerivation){
+                 QList<int> courseDerivation, bool otherLocoHasPriority){
         loco = new Locomotive();
         loco->fixerNumero(id);
         loco->fixerVitesse(vitesse);
@@ -41,7 +42,8 @@ public:
         this->loco1Number = loco1Number;
         this->loco2Number = loco2Number;
         this->courseDerivation = courseDerivation;
-        this->criticalDerivation = criticalDerivation;
+        this->otherLocoHasPriority = otherLocoHasPriority;
+        this->startingPoint = startingPoint;
         sens = true;
         turnNumber = 0;
         loco->afficherMessage("Ready!");
@@ -65,17 +67,13 @@ public:
                 if(section->getloco1Inside() || section->getaboutToCrossSwitch2()){
                     stop();
                 }
-
             }
-
         }
-
     }
 
     void run() Q_DECL_OVERRIDE{
         depart();
-
-        int pos = 0;
+        int pos = course.indexOf(startingPoint.first);
         while(true){
 
             if(loco->numero() == loco2Number){
@@ -88,6 +86,11 @@ public:
                 } else if (course.at(pos) == criticalContact.at(1)){
                     // entering the critical zone
 
+                    if(otherLocoHasPriority){
+                        arreter();
+                        while(otherLocoHasPriority);
+                        depart();
+                    }
                     section->setloco2Inside(true);
                     conflictManagment(true, sens);
                     section->changeSwitch(sens, loco->numero(), false);
@@ -127,7 +130,7 @@ public:
                     section->setaboutToCrossSwitch1(false);
                     section->setaboutToCrossSwitch2(false);
 
-                    if(section->getloco2Inside()){
+                    if(section->getloco2Inside() || otherLocoHasPriority){
                         derivation = true;
                     }
                     section->changeSwitch(sens, loco->numero(), derivation);
@@ -203,6 +206,7 @@ public:
 
     void stop(){
         arreter();
+        while(otherLocoHasPriority);
         section->acquire(); // restart when the section is free
         depart();
         section->release();
@@ -221,6 +225,10 @@ public:
         for(int k = 0; k < (criticalContact.size()/2); k++) {
             criticalContact.swap(k,criticalContact.size()-(1+k));
         }
+    }
+
+    void setOtherLocoPriority(bool b){
+        otherLocoHasPriority = b;
     }
 };
 

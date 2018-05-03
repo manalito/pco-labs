@@ -17,8 +17,8 @@ private:
     QSemaphore* switch1 = new QSemaphore(1);
     QSemaphore* switch2 = new QSemaphore(1);
     bool aboutToCrossSwitch1 = false;
-    bool loco1Inside = false;
     bool aboutToCrossSwitch2 = false;
+    bool loco1Inside = false;
     bool loco2Inside = false;
 
 public:
@@ -65,7 +65,6 @@ public:
                 diriger_aiguillage(4, DEVIE,  0);
             }
             switch2->release();
-
         }
     }
 
@@ -107,10 +106,6 @@ public:
 
     bool getaboutToCrossSwitch2(){
         return aboutToCrossSwitch1;
-    }
-
-    void waitFreeSignal(){
-       busy->acquire();
     }
 };
 
