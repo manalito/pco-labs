@@ -13,8 +13,6 @@ class Section{
 private:
     int loco1Number;
     int loco2Number;
-    QMutex* m1 = new QMutex();
-    QMutex* m2 = new QMutex();
     QSemaphore* busy = new QSemaphore(1);
     QSemaphore* switch1 = new QSemaphore(1);
     QSemaphore* switch2 = new QSemaphore(1);
@@ -38,16 +36,13 @@ public:
             if(locoNumber == loco1Number){
 
                 if(deviation){
-                    afficher_message(qPrintable(QString("sw1, deriv")));
                     diriger_aiguillage(8, DEVIE, 0);
                     diriger_aiguillage(7, TOUT_DROIT,  0);
                 } else {
-                    afficher_message(qPrintable(QString("sw1, no deriv")));
                     diriger_aiguillage(8, DEVIE, 0);
                     diriger_aiguillage(7, DEVIE,  0);
                 }
             } else if(locoNumber == loco2Number){
-                afficher_message(qPrintable(QString("Im about to cross switch1")));
                 diriger_aiguillage(8, TOUT_DROIT, 0);
                 diriger_aiguillage(7, DEVIE,  0);
             }
@@ -59,16 +54,13 @@ public:
             if(locoNumber == loco1Number){
 
                 if(deviation){
-                    afficher_message(qPrintable(QString("sw2, deriv")));
                     diriger_aiguillage(4, TOUT_DROIT, 0);
                     diriger_aiguillage(3, DEVIE,  0);
                 } else {
-                    afficher_message(qPrintable(QString("sw2, no deriv")));
                     diriger_aiguillage(4, DEVIE, 0);
                     diriger_aiguillage(3, DEVIE,  0);
                 }
             } else if(locoNumber == loco2Number){
-                afficher_message(qPrintable(QString("Im about to cross switch2")));
                 diriger_aiguillage(3, TOUT_DROIT, 0);
                 diriger_aiguillage(4, DEVIE,  0);
             }
@@ -77,14 +69,12 @@ public:
         }
     }
 
-    void bloquer(){
+    void acquire(){
         busy->acquire();
-        afficher_message(qPrintable(QString("bloqued")));
     }
 
-    void liberer(){
+    void release(){
         busy->release();
-        afficher_message(qPrintable(QString("released")));
     }
 
     void setaboutToCrossSwitch1(bool b){

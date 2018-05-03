@@ -7,27 +7,13 @@
 
 #include <QObject>
 
-/*
- * Worker class
- *
- */
-
-
-/* Classe gérant les thread des locomotives. Ces thread ont une référence sur
- * la même instance de la zone critique et font appel à ses méthodes.
- *
- * Les méthodes départ() et arreter() sont utiles car le fait d'arrêter ou non
- * un thread n'a pas de conséquence "physique" sur les locomotives.
- *
- *
- * */
 class Worker : public QThread{
 private:
     Locomotive* loco;
     QList<int> course;
     QList<int> courseDerivation;
     QList<int> criticalContact;
-    QList<int> criticalDerivation;
+    QList<int> criticalDerivation; // useless
     Section* section;
     bool sens; //true = forward
     int turnNumber;
@@ -62,36 +48,22 @@ public:
     }
 
     // apply the proper behavior (stop or deviate) if both loco are in the section
-    void conflictManagment(bool earlyCheck, int switchNumber){
+    void conflictManagment(bool earlyCheck, bool sens){
 
         if(!earlyCheck){
 
-            afficher_message(qPrintable(QString("no earyl check")));
             if(section->getloco1Inside()){
-                afficher_message(qPrintable(QString("should stop")));
-                arreter();
-                section->bloquer();
-                depart();
-                section->liberer();
+                stop();
             }
         } else{
 
-            afficher_message(qPrintable(QString("earyl check")));
-            if(switchNumber == 1){
+            if(sens){
                 if(section->getloco1Inside() || section->getaboutToCrossSwitch1()){
-                    afficher_message(qPrintable(QString("should stop")));
-                    arreter();
-                    section->bloquer();
-                    depart();
-                    section->liberer();
+                    stop();
                 }
             } else {
                 if(section->getloco1Inside() || section->getaboutToCrossSwitch2()){
-                    afficher_message(qPrintable(QString("should stop")));
-                    arreter();
-                    section->bloquer();
-                    depart();
-                    section->liberer();
+                    stop();
                 }
 
             }
@@ -111,25 +83,22 @@ public:
 
                 if(course.at(pos) == criticalContact.at(0)){
                     // about to enter the critical zone
-                    conflictManagment(false, 1);
+                    conflictManagment(false, sens);
 
                 } else if (course.at(pos) == criticalContact.at(1)){
                     // entering the critical zone
 
                     section->setloco2Inside(true);
-                    conflictManagment(true, 1);
-
-                    // change switches
+                    conflictManagment(true, sens);
                     section->changeSwitch(sens, loco->numero(), false);
 
                 } else if (course.at(pos) == criticalContact.at(2)){
                     // 1st contact inside critical zone
-                    conflictManagment(true, 2);
+                    conflictManagment(true, !sens);
 
                 } else if (course.at(pos) == criticalContact.at(3)){
                     // 2nd contact inside critical zone
-                    conflictManagment(true, 2);
-                    // change switches
+                    conflictManagment(true, !sens);
                     section->changeSwitch(!sens, loco->numero(), false);
 
                 } else if (course.at(pos) == criticalContact.at(4)){
@@ -137,9 +106,7 @@ public:
                     section->setloco2Inside(false);
 
                 }
-
                 pos = nextContact(pos);
-
 
             } else if(loco->numero() == loco1Number){
 
@@ -152,12 +119,13 @@ public:
                 if(course.at(pos) == criticalContact.at(0)){
                     // about to enter the critical zone
                     section->setaboutToCrossSwitch1(true);
-                    section->bloquer();
+                    section->acquire();
 
                 } else if (course.at(pos) == criticalContact.at(1)){
                     // entering the critical zone
                     section->setloco1Inside(true);
                     section->setaboutToCrossSwitch1(false);
+                    section->setaboutToCrossSwitch2(false);
 
                     if(section->getloco2Inside()){
                         derivation = true;
@@ -166,7 +134,11 @@ public:
 
                 } else if (course.at(pos) == criticalContact.at(2)){
                     // 1st contact inside critical zone
-                    section->setaboutToCrossSwitch2(true);
+                    if(sens){
+                        section->setaboutToCrossSwitch2(true);
+                    } else {
+                        section->setaboutToCrossSwitch1(true);
+                    }
 
                 } else if (course.at(pos) == criticalContact.at(3)){
                     // 2nd contact inside critical zone
@@ -174,11 +146,11 @@ public:
 
                 } else if (course.at(pos) == criticalContact.at(4)){
                     // exiting critical zone
+                    section->setaboutToCrossSwitch1(false);
                     section->setaboutToCrossSwitch2(false);
                     section->setloco1Inside(false);
-                    section->liberer();
+                    section->release();
                     derivation = false;
-
                 }
                 pos = nextContact(pos);
 
@@ -191,31 +163,6 @@ public:
         arreter();
     }
 
-    /*
-    int nextContact(int pos){
-        if(sens){
-            pos++;
-        }else{
-            pos--;
-        }
-        if(pos >= course.size()){
-           pos = 0;
-           turnNumber++;
-        }
-        if(pos < 0){
-           pos = course.size() - 1;
-           turnNumber++;
-        }
-        if(turnNumber == 2){
-            sens = !sens;
-            turnNumber = 0;
-            // On saute un capteur lors du changement de sens, pour ne pas rester bloqué
-            pos = (sens ? 1 : course.size() - 2);
-            loco->inverserSens();
-        }
-        return pos;
-    }*/
-
     int nextContact(int pos){
         pos++;
         if(pos >= course.size()){
@@ -225,25 +172,17 @@ public:
 
         if(turnNumber == 2){
             turnNumber = 0;
-            afficher_message(qPrintable(QString("1st contact before = %1").arg(course.at(1))));
             reverseQLists();
-            afficher_message(qPrintable(QString("1st contact after = %1").arg(course.at(1))));
             sens = !sens;
             pos = 1;
             loco->inverserSens();
-
+            // because we cannot re enter after switching in backward direction
             if(loco->numero() == loco1Number && !sens){
-                // because we cannot re enter correctly after switch direction
-                afficher_message(qPrintable(QString("tryna block ?")));
-                section->bloquer();
-                afficher_message(qPrintable(QString("did block !")));
+                section->acquire();
+                section->setaboutToCrossSwitch2(true);
             }
         }
         return pos;
-    }
-
-    bool getSens(){
-        return sens;
     }
 
     void waitContact(int contact){
@@ -262,6 +201,13 @@ public:
         loco->afficherMessage(qPrintable(QString("The engine is stopping!")));
     }
 
+    void stop(){
+        arreter();
+        section->acquire(); // restart when the section is free
+        depart();
+        section->release();
+    }
+    // since QList does not seem to have a proper reverse function
     void reverseQLists(){
 
         for(int k = 0; k < (course.size()/2); k++) {
