@@ -49,7 +49,7 @@ public:
         loco->afficherMessage("Ready!");
     }
 
-    // apply the proper behavior (stop or deviate) if both loco are in the section
+    // stop the colo if both loco are in the section, and restart it then
     void conflictManagment(bool earlyCheck, bool sens){
 
         if(!earlyCheck){
@@ -81,10 +81,12 @@ public:
 
                 if(course.at(pos) == criticalContact.at(0)){
                     // about to enter the critical zone
-                    conflictManagment(false, sens);
+                    conflictManagment(true, sens);
 
                 } else if (course.at(pos) == criticalContact.at(1)){
                     // entering the critical zone
+                    loco->afficherMessage("Im entering crit zone");
+
 
                     if(otherLocoHasPriority){
                         arreter();
@@ -98,6 +100,7 @@ public:
                 } else if (course.at(pos) == criticalContact.at(2)){
                     // 1st contact inside critical zone
                     conflictManagment(true, !sens);
+                    //the previous line has to be removed for the tests on "maquette"
 
                 } else if (course.at(pos) == criticalContact.at(3)){
                     // 2nd contact inside critical zone

@@ -33,8 +33,8 @@ int numTrain2 = 2;
  *
  * Utilisé uniquement en lecture
  */
-int vitesseLoco1 = 14;
-int vitesseLoco2 = 9;
+int vitesseLoco1 = 20;
+int vitesseLoco2 = 18;
 
 /*
 //Arret d'urgence
@@ -70,8 +70,8 @@ int cmain()
         critique2 << 17 << 12 << 9 << 4 << 5 << 24;
 
         //Depart locomotives
-        QPair<int, int> start1 = QPair<int,int>(19, 3);
-        QPair<int, int> start2 = QPair<int,int>(23, 24);
+        QPair<int, int> start1 = QPair<int,int>(14, 19);
+        QPair<int, int> start2 = QPair<int,int>(18, 23);
 
         //Choix de la maquette
         selection_maquette(MAQUETTE_B);
