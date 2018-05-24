@@ -6,17 +6,18 @@
 
 class Buffer;
 
-template<typename Buffer>
+template<typename T>
 class Buffer: public AbstractBuffer{
+private:
+    QList<T> requests;
 public:
     Buffer();
 
-    void put(Buffer item){
-
+    void put(T item){
+        requests.push(item);
     }
     Buffer get(){
-        T hello = "fef";
-        return hello;
+        return requests.size() - 1;
     }
 };
 
