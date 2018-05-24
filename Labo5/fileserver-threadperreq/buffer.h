@@ -14,10 +14,10 @@ public:
     Buffer();
 
     void put(T item){
-        requests.push(item);
+        requests.push_back(item);
     }
     Buffer get(){
-        return requests.size() - 1;
+        return requests.pop_front();
     }
 };
 
