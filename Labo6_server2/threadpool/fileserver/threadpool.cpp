@@ -1,6 +1,9 @@
 #include "threadpool.h"
 
-ThreadPool::ThreadPool()
-{
+ThreadPool::ThreadPool(int maxThreadCount) {
+
+}
+
+ThreadPool::start(Runnable *runnable) {
 
 }
