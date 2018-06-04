@@ -1,11 +1,16 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
-
+#include "runnable.h"
+#include "requesthandler.h"
+#include <QList>
+#include <QThread>
+#include <QWaitCondition>
+#include <QMutex>
 class ThreadPool
 {
 public:
-ThreadPool(int maxThreadCount);
+    ThreadPool(int maxThreadCount);
 
 /* Start a runnable. If a thread in the pool is avaible, assign the
  &
@@ -15,6 +20,15 @@ runnable to it. If no thread is available but the pool can grow, &
 →thread is available and the pool is at max capacity, block the &
 →caller until a thread becomes available again. */
 void start(Runnable* runnable);
-}
+void handleRequest(Request& request);
+
+private:
+const int maxThreadCount;
+int currentThreadCount;
+QList<QThread> threadList;
+QThread* freeThread();
+QWaitCondition* condition;
+QMutex* mutex;
+};
 
 #endif // THREADPOOL_H

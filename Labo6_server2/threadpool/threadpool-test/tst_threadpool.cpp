@@ -2,7 +2,6 @@
 #include <QtTest>
 #include <QTime>
 
-#include "threadpool.h"
 #include "tst_threadpool.h"
 
 

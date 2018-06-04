@@ -61,9 +61,13 @@ FileServer::FileServer(quint16 port, bool debug, QObject *parent) :
                                             QWebSocketServer::NonSecureMode, this)),
     hasDebugLog(debug)
 {
-    // requests = new... TODO
-    // responses = new... TODO
-    // reqDispatcher = new... TODO
+    unsigned int buffer_size = 1024;
+    requests = new BufferN<Request>(buffer_size, debug);
+    responses = new BufferN<Response>(buffer_size, debug);
+
+    reqDispatcher = new RequestDispatcherThread(requests,responses, hasDebugLog);
+    reqDispatcher->start();
+    respDispatcher = new ResponseDispatcherThread(responses, hasDebugLog);
     respDispatcher = new ResponseDispatcherThread(responses, hasDebugLog);
     respDispatcher->start();
     connect(respDispatcher, SIGNAL(responseReady(Response)), this, SLOT(handleResponse(Response)));
@@ -82,6 +86,8 @@ FileServer::~FileServer()
     websocketServer->close();
     delete reqDispatcher;
     delete respDispatcher;
+    delete requests;
+    delete responses;
     qDeleteAll(clients.begin(), clients.end());
 }
 

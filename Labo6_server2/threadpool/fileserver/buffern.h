@@ -12,10 +12,11 @@ protected:
     int writePointer, readPointer, nbElements, bufferSize;
     QSemaphore mutex, waitProd, waitConso;
     unsigned nbWaitingProd, nbWaitingConso;
+    bool debug;
 
 public:
 
-    BufferN(unsigned int size) : mutex(1) {
+    BufferN(unsigned int size, bool debug) : debug(debug), mutex(1) {
         if ((elements = new T[size]) != 0) {
             writePointer = readPointer = nbElements = 0;
             nbWaitingProd = nbWaitingConso = 0;
@@ -32,6 +33,7 @@ public:
         mutex.acquire();
         if(nbElements == bufferSize){
             mutex.release();
+            qInfo() << "bufferN full, could not put element" << endl;
             return false;
         }
         put(item);
@@ -50,13 +52,8 @@ public:
         readPointer = (readPointer + 1)
                       % bufferSize;
         nbElements --;
-        if (nbWaitingProd > 0) {
-            nbWaitingProd -= 1;
-            waitProd.release();
-        }
-        else {
-            mutex.release();
-        }
+        mutex.release();
+
         return item;
     }
 
