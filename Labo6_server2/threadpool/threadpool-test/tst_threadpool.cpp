@@ -3,6 +3,7 @@
 #include <QTime>
 
 #include "tst_threadpool.h"
+#include "threadpool.h"
 
 
 ThreadpoolTest::ThreadpoolTest()

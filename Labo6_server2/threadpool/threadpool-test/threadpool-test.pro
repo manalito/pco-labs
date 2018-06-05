@@ -27,7 +27,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-    tst_threadpool.cpp
+    tst_threadpool.cpp \
+    ../fileserver/threadpool.cpp
 
 HEADERS += \
     ../fileserver/threadpool.h \
