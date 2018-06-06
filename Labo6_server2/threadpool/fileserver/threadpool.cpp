@@ -37,11 +37,11 @@ void ThreadPool::start(Runnable *runnable) {
         //qInfo() << "Failed to start thread" << endl;
     }
 }
-
+/*
 void ThreadPool::handleRequest(Request& request){
-    RequestHandler* handler = new RequestHandler(request, condition, mutex, false);
-    this->start(handler);
-}
+    //RequestHandler* handler = new RequestHandler(request, condition, mutex, false);
+    this->start(new RequestHandler(request, condition, mutex, responses, false));
+}*/
 
 QThread* ThreadPool::freeThread(){
     for(int i = 0; i < threadList.size(); ++i){

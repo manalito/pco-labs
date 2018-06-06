@@ -5,6 +5,7 @@
 #include "request.h"
 #include "response.h"
 #include "runnable.h"
+#include "abstractbuffer.h"
 
 class RequestHandler : public Runnable
 {
@@ -16,10 +17,12 @@ private:
     QString name;
     QWaitCondition* condition;
     QMutex* mutex;
+    AbstractBuffer<Response>* responses;
 
 public:
     RequestHandler(Request request, QWaitCondition* condition,
-                   QMutex* mutex, bool hasDebugLog);
+                   QMutex* mutex, AbstractBuffer<Response>* responses,
+                   bool hasDebugLog);
     RequestHandler(const RequestHandler& handler);
     Response handle();
     void run();

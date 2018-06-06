@@ -3,9 +3,10 @@
 #include "filereader.h"
 
 RequestHandler::RequestHandler(Request request, QWaitCondition* condition,
-                               QMutex* mutex, bool hasDebugLog): request(request),
+                               QMutex* mutex, AbstractBuffer<Response>* responses,
+                               bool hasDebugLog): request(request),
                                condition(condition), mutex(mutex),
-                               hasDebugLog(hasDebugLog){
+                               responses(responses), hasDebugLog(hasDebugLog){
     ++counter;
     name = baseName + counter;
 }
@@ -19,19 +20,22 @@ RequestHandler::RequestHandler(const RequestHandler &handler){
 
 Response RequestHandler::handle()
 {
-    if (hasDebugLog)
-        qDebug() << "Handling request '" << this->request.getFilePath() << "'...";
-    FileReader reader(this->request.getFilePath(), this->hasDebugLog);
+    FileReader reader(request.getFilePath(), hasDebugLog);
+    // if the path corresponds to a file, read it and put the result in response
     if (reader.fileExists()) {
-        return Response(request, reader.readAll());
+        Response response(request, reader.readAll());
+        responses->put(response);
     } else {
-        return Response(request, "File not found!");
+        Response response(request, "File not found!");
+        responses->put(response);
     }
 }
 
 void RequestHandler::run(){
     handle();
+    mutex->lock();
     condition->wakeOne();
+    mutex->unlock();
 }
 
 QString RequestHandler::id(){
@@ -39,8 +43,6 @@ QString RequestHandler::id(){
 }
 
 RequestHandler::~RequestHandler(){
-    delete mutex;
-    delete condition;
 }
 
 int RequestHandler::counter = 0;

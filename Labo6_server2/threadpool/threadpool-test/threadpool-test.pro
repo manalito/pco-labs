@@ -28,11 +28,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     tst_threadpool.cpp \
-    ../fileserver/threadpool.cpp
+    ../fileserver/threadpool.cpp \
+    ../fileserver/requesthandler.cpp \
+    ../fileserver/fileserver.cpp \
+    ../fileserver/filereader.cpp \
+    ../fileserver/requestdispatcherthread.cpp \
+    ../fileserver/responsedispatcherthread.cpp
 
 HEADERS += \
     ../fileserver/threadpool.h \
-    tst_threadpool.h
+    ../fileserver/requesthandler.h \
+    tst_threadpool.h \
+    ../fileserver/fileserver.h \
+    ../fileserver/filereader.h \
+    ../fileserver/response.h \
+    ../fileserver/abstractbuffer.h \
+    ../fileserver/request.h \
+    ../fileserver/requestdispatcherthread.h \
+    ../fileserver/responsedispatcherthread.h \
+    ../fileserver/buffern.h \
+    ../fileserver/runnable.h
 
 INCLUDEPATH += \
     ../fileserver

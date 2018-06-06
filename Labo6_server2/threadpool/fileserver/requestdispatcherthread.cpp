@@ -21,7 +21,7 @@ void RequestDispatcherThread::run()
 
         // create a runnable to handle request
         RequestHandler requestHandler = RequestHandler(req, condition, mutex,
-                                                       hasDebugLog);
+                                                       responses, hasDebugLog);
 
         // pass the runnable to the thread pool
         threadPool->start(&requestHandler);
