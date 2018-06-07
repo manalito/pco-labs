@@ -9,11 +9,7 @@ WorkerThread::WorkerThread(Runnable* handler, QWaitCondition* condition,
 void WorkerThread::run(){
     handler->run();
     qInfo() << "run1" << endl;
-    //mutex->lock();
-    qInfo() << "run2 locked" << endl;
-    //condition->wakeOne();
-    qInfo() << "wake me up" << endl;
-    //mutex->unlock();
+    condition->wakeOne();
 }
 
 void WorkerThread::setRunnable(Runnable* handler){
