@@ -2,10 +2,8 @@
 #include "requesthandler.h"
 #include "filereader.h"
 
-RequestHandler::RequestHandler(Request request, QWaitCondition* condition,
-                               QMutex* mutex, AbstractBuffer<Response>* responses,
+RequestHandler::RequestHandler(Request request, AbstractBuffer<Response>* responses,
                                bool hasDebugLog): request(request),
-                               condition(condition), mutex(mutex),
                                responses(responses), hasDebugLog(hasDebugLog){
     ++counter;
     name = baseName + counter;
@@ -13,8 +11,6 @@ RequestHandler::RequestHandler(Request request, QWaitCondition* condition,
 
 RequestHandler::RequestHandler(const RequestHandler &handler){
     request = handler.request;
-    condition = handler.condition;
-    mutex = handler.mutex;
     hasDebugLog = handler.hasDebugLog;
 }
 

@@ -10,21 +10,24 @@ ThreadPool::ThreadPool(int maxThreadCount) :
 void ThreadPool::start(Runnable *runnable) {
 
     WorkerThread* worker;
+
     // if the pool is not full yet, create a new thread
     if(threadList.size() < maxThreadCount){
+        qDebug() << "creating new thread" << endl;
         worker = new WorkerThread(runnable, condition, mutex);
         threadList.push_back(worker);
+
+    // otherwise, take a free thread in the pool or wait until one is available
     } else {
         if((worker = freeThread()) == nullptr){
+            qDebug() << "retrieving old thread" << endl;
             mutex->lock();
+            // wait until a thread from the pool has finished its task
             condition->wait(mutex);
             mutex->unlock();
-            worker = freeThread();
 
-            if(worker == nullptr){
-                qInfo() << "error : a thread did not finish, exiting";
-                exit(-1);
-            }
+            // "while" is necessary if the thread takes some time to properly finish
+            while((worker = freeThread()) == nullptr);
         }
     }
     worker->setRunnable(runnable);

@@ -39,10 +39,16 @@ int currentThreadCount;
 // WorkerThread list containing all the threads, available or not
 QList<WorkerThread*> threadList;
 
-// return a
-WorkerThread* freeThread();
+// condition to manage the threads in the pool
 QWaitCondition* condition;
+
+// mutex used in the condition
 QMutex* mutex;
+
+/* return the first available WorkerThread from threadlist, return nullptr
+ * if they are all busy
+ */
+WorkerThread* freeThread();
 };
 
 #endif // THREADPOOL_H

@@ -42,12 +42,6 @@ private:
     bool hasDebugLog;
     // a threadpool that will handle the requests
     ThreadPool* threadPool;
-    // a condition to protect the requests managment in threadpool and
-    // requesthandler
-    QWaitCondition* condition = new QWaitCondition();
-    // a mutex to protect the concurrent accesses in threadpool and
-    // requesthandler
-    QMutex* mutex = new QMutex();
 
 };
 #endif // REQUESTDISPATCHERTHREAD_H

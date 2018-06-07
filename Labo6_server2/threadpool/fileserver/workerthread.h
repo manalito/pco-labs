@@ -6,24 +6,23 @@
 #include <QMutex>
 #include "runnable.h"
 
-/*
- *
- */
+// A thread class used in a threadpool to process a runnable
 class WorkerThread : public QThread
 {
 public:
-    // constructor
+    // constructors
     WorkerThread(Runnable*, QWaitCondition*, QMutex*);
-    WorkerThread();
     // run function inherited from QThread
     void run();
     // set a different runnable as attribute
     void setRunnable(Runnable*);
 
 private :
-    // a Runnable whose run function we will execute in the thread's run function
+    // runnable whose run function will be runned in the thread's run function
     Runnable* handler;
+    // condition to manage the threads in the pool
     QWaitCondition* condition;
+    // mutex used in the condition
     QMutex* mutex;
 
 };

@@ -16,14 +16,6 @@ private:
     // a request to process
     Request request;
 
-    // a condition to protect the requests managment in threadpool and
-    // requesthandler
-    QWaitCondition* condition;
-
-    // a mutex to protect the concurrent accesses in threadpool and
-    // requesthandler
-    QMutex* mutex;
-
     // a buffer to put the response to the request
     AbstractBuffer<Response>* responses;
 
@@ -42,8 +34,7 @@ private:
 public:
 
     // main constructor, will initialize the ID
-    RequestHandler(Request request, QWaitCondition* condition,
-                   QMutex* mutex, AbstractBuffer<Response>* responses,
+    RequestHandler(Request request, AbstractBuffer<Response>* responses,
                    bool hasDebugLog);
 
     // copy constructor
