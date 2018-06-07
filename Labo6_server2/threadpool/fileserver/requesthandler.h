@@ -11,20 +11,20 @@ class RequestHandler : public Runnable
 {
 private:
     Request request;
+    QWaitCondition* condition;
+    QMutex* mutex;
+    AbstractBuffer<Response>* responses;
     bool hasDebugLog;
     static int counter;
     static QString baseName;
     QString name;
-    QWaitCondition* condition;
-    QMutex* mutex;
-    AbstractBuffer<Response>* responses;
 
 public:
     RequestHandler(Request request, QWaitCondition* condition,
                    QMutex* mutex, AbstractBuffer<Response>* responses,
                    bool hasDebugLog);
     RequestHandler(const RequestHandler& handler);
-    Response handle();
+    void handle();
     void run();
     QString id();
     ~RequestHandler();

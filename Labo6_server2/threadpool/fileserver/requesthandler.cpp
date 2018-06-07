@@ -18,7 +18,7 @@ RequestHandler::RequestHandler(const RequestHandler &handler){
     hasDebugLog = handler.hasDebugLog;
 }
 
-Response RequestHandler::handle()
+void RequestHandler::handle()
 {
     FileReader reader(request.getFilePath(), hasDebugLog);
     // if the path corresponds to a file, read it and put the result in response

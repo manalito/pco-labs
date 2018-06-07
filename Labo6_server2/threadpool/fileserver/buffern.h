@@ -10,9 +10,9 @@ template<typename T> class BufferN : public AbstractBuffer<T> {
 protected:
     T *elements;
     int writePointer, readPointer, nbElements, bufferSize;
+    bool debug;
     QSemaphore mutex, waitProd, waitConso;
     unsigned nbWaitingProd, nbWaitingConso;
-    bool debug;
 
 public:
 

@@ -68,7 +68,6 @@ FileServer::FileServer(quint16 port, bool debug, QObject *parent) :
     reqDispatcher = new RequestDispatcherThread(requests,responses, hasDebugLog);
     reqDispatcher->start();
     respDispatcher = new ResponseDispatcherThread(responses, hasDebugLog);
-    respDispatcher = new ResponseDispatcherThread(responses, hasDebugLog);
     respDispatcher->start();
     connect(respDispatcher, SIGNAL(responseReady(Response)), this, SLOT(handleResponse(Response)));
 

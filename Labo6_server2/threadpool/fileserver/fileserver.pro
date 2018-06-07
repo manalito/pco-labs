@@ -14,7 +14,8 @@ SOURCES += \
     requesthandler.cpp \
     requestdispatcherthread.cpp \
     responsedispatcherthread.cpp \
-    threadpool.cpp
+    threadpool.cpp \
+    workerthread.cpp
 
 HEADERS += \
     fileserver.h \
@@ -27,7 +28,8 @@ HEADERS += \
     responsedispatcherthread.h \
     threadpool.h \
     buffern.h \
-    runnable.h
+    runnable.h \
+    workerthread.h
 
 EXAMPLE_FILES += fileclient.html
 

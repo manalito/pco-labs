@@ -3,6 +3,7 @@
 
 #include "runnable.h"
 #include "requesthandler.h"
+#include "workerthread.h"
 #include <QList>
 #include <QThread>
 #include <QWaitCondition>
@@ -20,13 +21,12 @@ runnable to it. If no thread is available but the pool can grow, &
 →thread is available and the pool is at max capacity, block the &
 →caller until a thread becomes available again. */
 void start(Runnable* runnable);
-//void handleRequest(Request& request);
 
 private:
 const int maxThreadCount;
 int currentThreadCount;
-QList<QThread> threadList;
-QThread* freeThread();
+QList<WorkerThread> threadList;
+WorkerThread* freeThread();
 QWaitCondition* condition;
 QMutex* mutex;
 };
