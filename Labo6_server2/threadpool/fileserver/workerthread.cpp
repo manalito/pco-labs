@@ -1,7 +1,6 @@
 #include "workerthread.h"
 #include <QDebug>
 
-WorkerThread::WorkerThread(){}
 WorkerThread::WorkerThread(Runnable* handler, QWaitCondition* condition,
                            QMutex* mutex): handler(handler), condition(condition),
                            mutex(mutex){}

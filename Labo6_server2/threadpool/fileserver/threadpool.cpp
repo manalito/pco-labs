@@ -27,7 +27,9 @@ void ThreadPool::start(Runnable *runnable) {
             mutex->unlock();
 
             // "while" is necessary if the thread takes some time to properly finish
-            while((worker = freeThread()) == nullptr);
+            while((worker = freeThread()) == nullptr){
+                qDebug() << "attente active" << endl;
+            }
         }
     }
     worker->setRunnable(runnable);
