@@ -58,7 +58,6 @@ public:
         mutex.acquire();
         if(nbElements == bufferSize){
             mutex.release();
-            qInfo() << "bufferN full, could not put element" << endl;
             return false;
         }
         put(item);

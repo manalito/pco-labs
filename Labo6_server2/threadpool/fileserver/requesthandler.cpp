@@ -16,7 +16,8 @@ RequestHandler::RequestHandler(const RequestHandler &handler){
 
 void RequestHandler::handle()
 {
-    qInfo() << "starting handling" << endl;
+    qDebug() << "handling request ..." << endl;
+
     FileReader reader(request.getFilePath(), hasDebugLog);
     // if the path corresponds to a file, read it and put the result in response
     if (reader.fileExists()) {
@@ -26,7 +27,6 @@ void RequestHandler::handle()
         Response response(request, "File not found!");
         responses->put(response);
     }
-    qInfo() << "handled" << endl;
 }
 
 void RequestHandler::run(){

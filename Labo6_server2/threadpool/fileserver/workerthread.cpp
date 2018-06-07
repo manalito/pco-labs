@@ -7,7 +7,6 @@ WorkerThread::WorkerThread(Runnable* handler, QWaitCondition* condition,
 
 void WorkerThread::run(){
     handler->run();
-    qInfo() << "run1" << endl;
     condition->wakeOne();
 }
 

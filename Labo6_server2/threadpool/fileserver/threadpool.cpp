@@ -19,8 +19,8 @@ void ThreadPool::start(Runnable *runnable) {
 
     // otherwise, take a free thread in the pool or wait until one is available
     } else {
+        qDebug() << "retrieving old thread" << endl;
         if((worker = freeThread()) == nullptr){
-            qDebug() << "retrieving old thread" << endl;
             mutex->lock();
             // wait until a thread from the pool has finished its task
             condition->wait(mutex);
@@ -48,6 +48,11 @@ WorkerThread* ThreadPool::ThreadPool::freeThread(){
 }
 
 ThreadPool::~ThreadPool(){
+
+    for(int i = 0; i < threadList.size(); ++i){
+        threadList.at(i)->terminate();
+        threadList.at(i)->wait();
+    }
     delete condition;
     delete mutex;
 }
