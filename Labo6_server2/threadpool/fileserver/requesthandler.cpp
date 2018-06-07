@@ -32,9 +32,11 @@ void RequestHandler::handle()
 }
 
 void RequestHandler::run(){
+    qInfo() << "processing..." << endl;
     handle();
     mutex->lock();
-    condition->wakeOne();
+    condition->wakeAll();
+    qInfo() << "wake me up" << endl;
     mutex->unlock();
 }
 
