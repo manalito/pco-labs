@@ -30,7 +30,6 @@ void RequestHandler::handle()
 }
 
 void RequestHandler::run(){
-    qInfo() << "processing..." << endl;
     handle();
 }
 

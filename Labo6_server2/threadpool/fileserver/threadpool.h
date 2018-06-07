@@ -19,8 +19,11 @@ class ThreadPool
 {
 public:
 
-    // constructor
-    ThreadPool(int maxThreadCount);
+// constructor
+ThreadPool(int maxThreadCount);
+
+// destructor
+~ThreadPool();
 
 /* Start a runnable. If a thread in the pool is avaible, assign the
 &runnable to it. If no thread is available but the pool can grow, &

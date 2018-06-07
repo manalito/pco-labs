@@ -9,7 +9,7 @@ RequestDispatcherThread::RequestDispatcherThread(AbstractBuffer<Request>* reques
     this->hasDebugLog = hasDebugLog;
     if (this->hasDebugLog)
         qDebug() << "Launching request dispatcher";
-    threadPool = new ThreadPool(2);
+    threadPool = new ThreadPool(8);
 }
 
 void RequestDispatcherThread::run()
@@ -26,7 +26,6 @@ void RequestDispatcherThread::run()
 
         // pass the runnable to the thread pool
         threadPool->start(requestHandler);
-
     }
 }
 RequestDispatcherThread::~RequestDispatcherThread(){

@@ -36,13 +36,20 @@ void ThreadPool::start(Runnable *runnable) {
     worker->start();
 }
 
-WorkerThread* ThreadPool::freeThread(){
+WorkerThread* ThreadPool::ThreadPool::freeThread(){
     for(int i = 0; i < threadList.size(); ++i){
         if(threadList.at(i)->isFinished()){
+            // delete the runnable that has finished its task in the thread
+            threadList.at(i)->tryDeleteRunnable();
             return threadList.at(i);
         }
     }
     return nullptr;
+}
+
+ThreadPool::~ThreadPool(){
+    delete condition;
+    delete mutex;
 }
 
 

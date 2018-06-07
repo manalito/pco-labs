@@ -16,6 +16,9 @@ public:
     void run();
     // set a different runnable as attribute
     void setRunnable(Runnable*);
+    // try to delete the runnable, return true if success or false if the
+    // thread is not finished
+    bool tryDeleteRunnable();
 
 private :
     // runnable whose run function will be runned in the thread's run function
