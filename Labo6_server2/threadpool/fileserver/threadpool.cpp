@@ -18,9 +18,7 @@ void ThreadPool::start(Runnable *runnable) {
     } else {
         qInfo() << "yup" << endl;
         while((worker = freeThread()) == nullptr){
-            qInfo() << "im in " << endl;
-            condition->wait(mutex);
-            qInfo() << "im out" << endl;
+            //condition->wait(mutex);
         }
     }
     mutex->unlock();

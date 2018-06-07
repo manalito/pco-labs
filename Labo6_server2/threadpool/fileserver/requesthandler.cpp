@@ -20,6 +20,7 @@ RequestHandler::RequestHandler(const RequestHandler &handler){
 
 void RequestHandler::handle()
 {
+    qInfo() << "starting handling" << endl;
     FileReader reader(request.getFilePath(), hasDebugLog);
     // if the path corresponds to a file, read it and put the result in response
     if (reader.fileExists()) {
@@ -29,15 +30,12 @@ void RequestHandler::handle()
         Response response(request, "File not found!");
         responses->put(response);
     }
+    qInfo() << "handled" << endl;
 }
 
 void RequestHandler::run(){
     qInfo() << "processing..." << endl;
     handle();
-    mutex->lock();
-    condition->wakeAll();
-    qInfo() << "wake me up" << endl;
-    mutex->unlock();
 }
 
 QString RequestHandler::id(){
