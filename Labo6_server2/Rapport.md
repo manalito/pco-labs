@@ -1,7 +1,7 @@
-#PCO - Labo 6 Server part 1
+#PCO - Labo 6 Server part 2
 
-*Auteurs : Aurélien Siu et Romain Gallay*
-*07.06.2018*
+**Auteurs** : *Aurélien Siu et Romain Gallay*
+**Date**: *07.06.2018*
 
 
 ## Fonctionnalité du logiciel
