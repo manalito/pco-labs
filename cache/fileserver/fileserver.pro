@@ -17,7 +17,8 @@ SOURCES += \
     threadpool.cpp \
     workerthread.cpp \
     readerwritercache.cpp \
-    readerwriterlock.cpp
+    readerwriterlock.cpp \
+    hoaremonitor.cpp
 
 HEADERS += \
     fileserver.h \
@@ -34,7 +35,8 @@ HEADERS += \
     workerthread.h \
     option.h \
     readerwritercache.h \
-    readerwriterlock.h
+    readerwriterlock.h \
+    hoaremonitor.h
 
 EXAMPLE_FILES += fileclient.html
 

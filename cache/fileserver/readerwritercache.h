@@ -32,8 +32,8 @@ private:
 	};
 
 	QHash<QString, TimestampedResponse> map;
-	int invalidationDelaySec;
-	int staleDelaySec;
+    int invalidationDelaySec; // interval between 2 verifications
+    int staleDelaySec; // delay after a cache entry is deleted
 	InvalidationTimer* timer;
 	ReaderWriterLock lock;
 

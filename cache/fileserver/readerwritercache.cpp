@@ -6,8 +6,7 @@
 
 ReaderWriterCache::ReaderWriterCache(int invalidationDelaySec, int staleDelaySec):
     invalidationDelaySec(invalidationDelaySec), staleDelaySec(staleDelaySec)
-{
-}
+{}
 
 ReaderWriterCache::~ReaderWriterCache()
 {}

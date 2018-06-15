@@ -1,8 +1,10 @@
 #ifndef READERWRITERLOCK_H
 #define READERWRITERLOCK_H
 
+#include <hoaremonitor.h>
 
-class ReaderWriterLock
+
+class ReaderWriterLock : public HoareMonitor
 {
 
 public:
