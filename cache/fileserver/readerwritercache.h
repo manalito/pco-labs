@@ -1,5 +1,6 @@
 #ifndef READERWRITERCACHE_H
 #define READERWRITERCACHE_H
+#include <QDateTime>
 #include <QHash>
 #include <QThread>
 #include <QMutex>
@@ -28,6 +29,19 @@ private:
 	protected:
 		void run() {
 			// TODO
+            forever{
+                sleep(cache->invalidationDelaySec);
+
+                long currentTime = QDateTime::currentSecsSinceEpoch();
+                for(QHash<QString, TimestampedResponse>::iterator i=cache->map.begin(); i!=cache->map.end(); ++i){
+                    if(cache->invalidationDelaySec < currentTime - i.value().timestamp){
+                        cache->map.remove(i.key());
+                    }
+                }
+                cache->lock.unlockWriting();
+            }
+
+
 		}
 	};
 
