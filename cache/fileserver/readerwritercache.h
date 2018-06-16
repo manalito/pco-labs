@@ -28,11 +28,11 @@ private:
 
 	protected:
 		void run() {
-			// TODO
             forever{
                 sleep(cache->invalidationDelaySec);
 
                 long currentTime = QDateTime::currentSecsSinceEpoch();
+                cache->lock.lockWriting();
                 for(QHash<QString, TimestampedResponse>::iterator i=cache->map.begin(); i!=cache->map.end(); ++i){
                     if(cache->invalidationDelaySec < currentTime - i.value().timestamp){
                         cache->map.remove(i.key());
@@ -40,8 +40,6 @@ private:
                 }
                 cache->lock.unlockWriting();
             }
-
-
 		}
 	};
 
