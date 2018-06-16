@@ -41,6 +41,8 @@ private:
                     }
                 }
                 cache->lock.unlockWriting();
+                if(QThread::currentThread()->isInterruptionRequested())
+                    return;
             }
 		}
 	};

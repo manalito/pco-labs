@@ -12,6 +12,8 @@ ReaderWriterCache::ReaderWriterCache(int invalidationDelaySec, int staleDelaySec
 }
 
 ReaderWriterCache::~ReaderWriterCache(){
+    timer->requestInterruption();
+    timer->wait();
     delete timer;
 }
 
