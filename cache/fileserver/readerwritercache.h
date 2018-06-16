@@ -34,7 +34,7 @@ private:
                 long currentTime = QDateTime::currentSecsSinceEpoch();
                 cache->lock.lockWriting();
                 for(QHash<QString, TimestampedResponse>::iterator i=cache->map.begin(); i!=cache->map.end(); ++i){
-                    if(cache->invalidationDelaySec < currentTime - i.value().timestamp){
+                    if(cache->staleDelaySec < currentTime - i.value().timestamp){
                         cache->map.remove(i.key());
                     }
                 }

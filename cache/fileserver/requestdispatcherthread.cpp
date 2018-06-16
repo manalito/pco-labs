@@ -1,6 +1,7 @@
 #include "requestdispatcherthread.h"
 #include "requestprocessor.h"
 #include <QList>
+#include <QDebug>
 
 RequestDispatcherThread::RequestDispatcherThread(AbstractBuffer<Request>* requests,
                                                  AbstractBuffer<Response>* responses,
@@ -16,16 +17,18 @@ void RequestDispatcherThread::run()
 {
     forever
     {
-        if (hasDebugLog)
-            qDebug() << "Waiting for request...";
+            qInfo() << "Waiting for request...";
         Request req = requests->get();
+        qInfo() << "request received" << endl;
 
         Option<Response> cacheResponse = cache->tryGetCachedResponse(req);
 
         // if the reponse is in the cache, put it in buffer
         if(cacheResponse.hasValue()){
+            qInfo() << "cache has value" << endl;
             responses->put(cacheResponse.value());
         } else {
+            qInfo() << "cache has no value" << endl;
             // else start a new request processor
             RequestProcessor* reqProcesser = new RequestProcessor(req, responses,
                                                                   hasDebugLog, cache);

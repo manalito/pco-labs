@@ -1,16 +1,14 @@
 #ifndef READERWRITERLOCK_H
 #define READERWRITERLOCK_H
 #include <QSemaphore>
+#include "hoaremonitor.h"
 
-class ReaderWriterLock
+class ReaderWriterLock : public HoareMonitor
 {
 
 public:
-    QSemaphore mutexReaders;
-    QSemaphore mutexWriters;
-    QSemaphore writer;
-    QSemaphore reader;
-    QSemaphore mutex;
+    Condition writerCond;
+    Condition readerCond;
     int nbReaders, nbWriters;
 
     ReaderWriterLock();

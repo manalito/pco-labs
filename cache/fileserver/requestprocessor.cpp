@@ -16,6 +16,7 @@ void RequestProcessor::run()
     if (reader.fileExists()) {
         Response response(request, reader.readAll());
         responses->put(response);
+        cache->putResponse(response);
     } else {
         Response response(request, "File not found!");
         responses->put(response);
