@@ -51,7 +51,6 @@ private:
 
 public:
 	ReaderWriterCache(int invalidationDelaySec, int staleDelaySec);
-
 	Option<Response> tryGetCachedResponse(Request& request);
 	void putResponse(Response& response);
     ~ReaderWriterCache();
