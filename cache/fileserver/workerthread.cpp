@@ -6,6 +6,7 @@ WorkerThread::WorkerThread(Runnable* handler, QWaitCondition* condition,
                            mutex(mutex){}
 
 void WorkerThread::run(){
+    // TODO check if response is cached
     handler->run();
     condition->wakeOne();
 }

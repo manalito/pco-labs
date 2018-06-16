@@ -8,8 +8,9 @@ ReaderWriterCache::ReaderWriterCache(int invalidationDelaySec, int staleDelaySec
     invalidationDelaySec(invalidationDelaySec), staleDelaySec(staleDelaySec)
 {}
 
-ReaderWriterCache::~ReaderWriterCache()
-{}
+ReaderWriterCache::~ReaderWriterCache(){
+
+}
 
 void ReaderWriterCache::putResponse(Response &response) {
 }
