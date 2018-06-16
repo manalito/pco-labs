@@ -12,13 +12,17 @@ ReaderWriterCache::ReaderWriterCache(int invalidationDelaySec, int staleDelaySec
 }
 
 ReaderWriterCache::~ReaderWriterCache(){
+    // request interruption of the timer
     timer->requestInterruption();
+    // wait for the timer to finish and then delete it
     timer->wait();
     delete timer;
 }
 
 void ReaderWriterCache::putResponse(Response &response) {
     lock.lockWriting();
+
+    // create a timestampedResponse from the given response to put it in the map
     TimestampedResponse timestampedResponse;
     timestampedResponse.response = response;
     timestampedResponse.timestamp = QDateTime::currentSecsSinceEpoch();

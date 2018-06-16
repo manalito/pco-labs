@@ -22,7 +22,6 @@ void ReaderWriterCacheTest::initTestCase()
 void ReaderWriterCacheTest::testSingleReadWrite()
 {
     initTestCase();
-    QTextStream(stdout) << "In testSingleReadWrite" << endl;
     ReaderWriterCache cache(1,5);
 
     Request req("This is a request", "clientId");
