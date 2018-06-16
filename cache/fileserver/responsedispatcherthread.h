@@ -5,6 +5,7 @@
 #include <QDebug>
 #include "abstractbuffer.h"
 #include "response.h"
+#include "readerwritercache.h"
 
 class ResponseDispatcherThread: public QThread
 {
@@ -23,6 +24,7 @@ protected:
 private:
     AbstractBuffer<Response>* responses;
     bool hasDebugLog;
+    ReaderWriterCache* cache;
 
 signals:
     void responseReady(Response reponse);

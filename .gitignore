@@ -2,3 +2,4 @@ cache/fileserver/fileserver.pro.user
 cache/build-fileserver-Desktop_Qt_5_10_1_MinGW_32bit-Debug
 build*
 **.pro.user**
+**.autosave**

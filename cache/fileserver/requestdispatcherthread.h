@@ -22,5 +22,6 @@ private:
     AbstractBuffer<Response>* responses;
     QList<RequestProcessor*> threadList;
     bool hasDebugLog;
+    ReaderWriterCache* cache;
 };
 #endif // REQUESTDISPATCHERTHREAD_H

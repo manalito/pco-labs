@@ -3,9 +3,9 @@
 #include "filereader.h"
 
 RequestProcessor::RequestProcessor(Request request, AbstractBuffer<Response>* responses,
-                                       bool hasDebugLog):responses(responses),
-                            request(request),
-                            hasDebugLog(hasDebugLog) {}
+                                       bool hasDebugLog, ReaderWriterCache* cache):
+                            responses(responses), request(request),
+                            hasDebugLog(hasDebugLog), cache(cache) {}
 
 void RequestProcessor::run()
 {
