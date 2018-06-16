@@ -4,7 +4,7 @@
 
 RequestProcessor::RequestProcessor(Request request, AbstractBuffer<Response>* responses,
                                        bool hasDebugLog, ReaderWriterCache* cache):
-                            responses(responses), request(request),
+                            request(request), responses(responses),
                             hasDebugLog(hasDebugLog), cache(cache) {}
 
 void RequestProcessor::run()

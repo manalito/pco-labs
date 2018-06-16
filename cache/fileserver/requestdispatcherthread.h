@@ -20,8 +20,9 @@ private:
 
     AbstractBuffer<Request>* requests;
     AbstractBuffer<Response>* responses;
-    QList<RequestProcessor*> threadList;
     bool hasDebugLog;
+    QList<RequestProcessor*> threadList;
+
     ReaderWriterCache* cache;
 };
 #endif // REQUESTDISPATCHERTHREAD_H

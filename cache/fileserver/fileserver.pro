@@ -16,7 +16,7 @@ SOURCES += \
     requestprocessor.cpp \
     hoaremonitor.cpp \
     readerwritercache.cpp \
-    readerwriterlock.cpp
+    readerwriterlock.cpp \
 
 HEADERS += \
     fileserver.h \

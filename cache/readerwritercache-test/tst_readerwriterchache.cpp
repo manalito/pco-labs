@@ -1,6 +1,7 @@
 #include <QString>
 #include <QtTest>
 #include <QTime>
+#include <QTextStream>
 
 #include "readerwritercache.h"
 #include "tst_readerwriterchache.h"
@@ -21,6 +22,7 @@ void ReaderWriterCacheTest::initTestCase()
 void ReaderWriterCacheTest::testSingleReadWrite()
 {
     initTestCase();
+    QTextStream(stdout) << "In testSingleReadWrite" << endl;
     ReaderWriterCache cache(1,5);
 
     Request req("This is a request", "clientId");

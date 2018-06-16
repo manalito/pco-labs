@@ -6,7 +6,7 @@
 RequestDispatcherThread::RequestDispatcherThread(AbstractBuffer<Request>* requests,
                                                  AbstractBuffer<Response>* responses,
                                                  bool hasDebugLog)
-    : hasDebugLog(hasDebugLog),responses(responses),requests(requests)
+    : requests(requests), responses(responses), hasDebugLog(hasDebugLog)
 {
     if (hasDebugLog)
         qDebug() << "Launching request dispatcher";

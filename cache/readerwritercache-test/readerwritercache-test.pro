@@ -24,11 +24,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     ../fileserver/readerwritercache.cpp \
     ../fileserver/readerwriterlock.cpp \
+    ../fileserver/hoaremonitor.cpp \
     tst_readerwriterchache.cpp
 
 HEADERS += \
     ../fileserver/readerwritercache.h \
     ../fileserver/readerwriterlock.h \
+    ../fileserver/hoaremonitor.h \
+    ../fileserver/option.h \
     tst_readerwriterchache.h
 
 INCLUDEPATH += \
