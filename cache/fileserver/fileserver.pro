@@ -11,14 +11,12 @@ SOURCES += \
     main.cpp \
     fileserver.cpp \
     filereader.cpp \
-    requesthandler.cpp \
-    requestdispatcherthread.cpp \
     responsedispatcherthread.cpp \
-    threadpool.cpp \
-    workerthread.cpp \
+    requestdispatcherthread.cpp \
+    requestprocessor.cpp \
+    hoaremonitor.cpp \
     readerwritercache.cpp \
-    readerwriterlock.cpp \
-    hoaremonitor.cpp
+    readerwriterlock.cpp
 
 HEADERS += \
     fileserver.h \
@@ -26,17 +24,14 @@ HEADERS += \
     response.h \
     abstractbuffer.h \
     request.h \
-    requesthandler.h \
-    requestdispatcherthread.h \
     responsedispatcherthread.h \
-    threadpool.h \
+    requestdispatcherthread.h \
     buffern.h \
-    runnable.h \
-    workerthread.h \
+    requestprocessor.h \
+    hoaremonitor.h \
     option.h \
     readerwritercache.h \
-    readerwriterlock.h \
-    hoaremonitor.h
+    readerwriterlock.h
 
 EXAMPLE_FILES += fileclient.html
 

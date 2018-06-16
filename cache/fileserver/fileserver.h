@@ -54,10 +54,10 @@
 #include <QByteArray>
 #include <QMap>
 #include <QString>
-#include "requestdispatcherthread.h"
 #include "responsedispatcherthread.h"
+#include "requestdispatcherthread.h"
 #include "response.h"
-#include "buffern.h"
+#include "abstractbuffer.h"
 
 QT_FORWARD_DECLARE_CLASS(QWebSocketServer)
 QT_FORWARD_DECLARE_CLASS(QWebSocket)

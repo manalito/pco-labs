@@ -6,36 +6,16 @@
 
 const int NoInitTamponN = 10;
 
-/*
- * A container class to simulate a buffer protected against concurrent accesses
- */
 template<typename T> class BufferN : public AbstractBuffer<T> {
 protected:
-    // the "buffer", an array of elements of type T
     T *elements;
-
-    // indices of reader and writer pointers in elements array
-    int writePointer, readPointer;
-
-    // current number of elements in elements array
-    int nbElements;
-
-    // size of elements array
-    int bufferSize;
-
-    // will display debug messages if true
-    bool debug;
-
-    // semaphores to protect concurrent accesses
+    int writePointer, readPointer, nbElements, bufferSize;
     QSemaphore mutex, waitProd, waitConso;
-
-    // counters of waiting producers and consumers
     unsigned nbWaitingProd, nbWaitingConso;
 
 public:
 
-    // constructor
-    BufferN(unsigned int size, bool debug) : debug(debug), mutex(1) {
+    BufferN(unsigned int size) : mutex(1) {
         if ((elements = new T[size]) != 0) {
             writePointer = readPointer = nbElements = 0;
             nbWaitingProd = nbWaitingConso = 0;
@@ -46,25 +26,28 @@ public:
         throw NoInitTamponN;
     }
 
-    // destructor
     virtual ~BufferN() {}
 
-    /*
-     * Try to put an item in the buffer.
-     * If the buffer is full, then do not put the item and return false.
-     * If the buffer is not full, put the item and return true.
-     */
-    virtual bool tryPut(T item){
+    virtual void put(T item) {
         mutex.acquire();
-        if(nbElements == bufferSize){
+        if (nbElements == bufferSize) {
+            nbWaitingProd += 1;
             mutex.release();
-            return false;
+            waitProd.acquire();
         }
-        put(item);
-        return true;
+        elements[writePointer] = item;
+        writePointer = (writePointer + 1)
+                       % bufferSize;
+        nbElements ++;
+        if (nbWaitingConso > 0) {
+            nbWaitingConso -= 1;
+            waitConso.release();
+        }
+        else {
+            mutex.release();
+        }
     }
 
-    // Return the "oldest" item in the buffer
     virtual T get(void) {
         T item;
         mutex.acquire();
@@ -77,26 +60,14 @@ public:
         readPointer = (readPointer + 1)
                       % bufferSize;
         nbElements --;
-        mutex.release();
-
-        return item;
-    }
-
-private :
-    // put an item in the buffer
-    virtual void put(T item) {
-
-        elements[writePointer] = item;
-        writePointer = (writePointer + 1)
-                       % bufferSize;
-        nbElements ++;
-        if (nbWaitingConso > 0) {
-            nbWaitingConso -= 1;
-            waitConso.release();
+        if (nbWaitingProd > 0) {
+            nbWaitingProd -= 1;
+            waitProd.release();
         }
         else {
             mutex.release();
         }
+        return item;
     }
 };
 

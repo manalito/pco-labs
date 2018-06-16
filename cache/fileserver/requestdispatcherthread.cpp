@@ -1,15 +1,14 @@
 #include "requestdispatcherthread.h"
+#include "requestprocessor.h"
 #include <QList>
 
 RequestDispatcherThread::RequestDispatcherThread(AbstractBuffer<Request>* requests,
                                                  AbstractBuffer<Response>* responses,
                                                  bool hasDebugLog)
-    : requests(requests),responses(responses)
+    : hasDebugLog(hasDebugLog),responses(responses),requests(requests)
 {
-    this->hasDebugLog = hasDebugLog;
-    if (this->hasDebugLog)
+    if (hasDebugLog)
         qDebug() << "Launching request dispatcher";
-    threadPool = new ThreadPool(8);
 }
 
 void RequestDispatcherThread::run()
@@ -20,14 +19,20 @@ void RequestDispatcherThread::run()
             qDebug() << "Waiting for request...";
         Request req = requests->get();
 
-        // create a runnable to handle request
-        RequestHandler* requestHandler = new RequestHandler(req, responses,
-                                                            hasDebugLog);
+        // start a new request processor
+        RequestProcessor* reqProcesser = new RequestProcessor(req, responses,
+                                                              hasDebugLog);
+        threadList.push_back(reqProcesser);
+        reqProcesser->start();
 
-        // pass the runnable to the thread pool
-        threadPool->start(requestHandler);
+        // clean the thread list
+        for(RequestProcessor* req : threadList)
+        {
+            if(req->isFinished())
+            {
+               threadList.removeOne(req);
+               delete(req);
+            }
+        }
     }
-}
-RequestDispatcherThread::~RequestDispatcherThread(){
-    delete threadPool;
 }

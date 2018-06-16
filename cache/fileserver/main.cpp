@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 
     FileServer *server = new FileServer(port, debug);
     QObject::connect(server, &FileServer::closed, &a, &QCoreApplication::quit);
+    qInfo() << "Server is running";
 
     return a.exec();
 }

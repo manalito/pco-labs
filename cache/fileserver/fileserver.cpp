@@ -54,6 +54,7 @@
 #include "filereader.h"
 #include "response.h"
 #include "request.h"
+#include "buffern.h"
 
 FileServer::FileServer(quint16 port, bool debug, QObject *parent) :
     QObject(parent),
@@ -61,13 +62,14 @@ FileServer::FileServer(quint16 port, bool debug, QObject *parent) :
                                             QWebSocketServer::NonSecureMode, this)),
     hasDebugLog(debug)
 {
-    unsigned int buffer_size = 1024;
-    requests = new BufferN<Request>(buffer_size, debug);
-    responses = new BufferN<Response>(buffer_size, debug);
+    unsigned int buffer_size = 2048;
+    requests = new BufferN<Request>(buffer_size);
+    responses = new BufferN<Response>(buffer_size);
 
     reqDispatcher = new RequestDispatcherThread(requests,responses, hasDebugLog);
     reqDispatcher->start();
     respDispatcher = new ResponseDispatcherThread(responses, hasDebugLog);
+
     respDispatcher->start();
     connect(respDispatcher, SIGNAL(responseReady(Response)), this, SLOT(handleResponse(Response)));
 
@@ -85,8 +87,6 @@ FileServer::~FileServer()
     websocketServer->close();
     delete reqDispatcher;
     delete respDispatcher;
-    delete requests;
-    delete responses;
     qDeleteAll(clients.begin(), clients.end());
 }
 
@@ -109,11 +109,7 @@ void FileServer::processTextMessage(QString message)
         qDebug() << "Message received:" << message;
     if (pClient) {
         Request req(message, pClient->origin());
-
-        if(!requests->tryPut(req)){
-            pClient->sendTextMessage(
-                        Response(req, "server overloaded,try later").toJson());
-        }
+        requests->put(req);
     }
 }
 
