@@ -17,18 +17,14 @@ void RequestDispatcherThread::run()
 {
     forever
     {
-            qInfo() << "Waiting for request...";
         Request req = requests->get();
-        qInfo() << "request received" << endl;
 
         Option<Response> cacheResponse = cache->tryGetCachedResponse(req);
 
         // if the reponse is in the cache, put it in buffer
         if(cacheResponse.hasValue()){
-            qInfo() << "cache has value" << endl;
             responses->put(cacheResponse.value());
         } else {
-            qInfo() << "cache has no value" << endl;
             // else start a new request processor
             RequestProcessor* reqProcesser = new RequestProcessor(req, responses,
                                                                   hasDebugLog, cache);

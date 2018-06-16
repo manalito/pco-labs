@@ -15,8 +15,10 @@ class HoareMonitor
 {
 protected:
 
+    // constructor
     HoareMonitor();
 
+    // "friend" class condition, used in wait and signal function in HoareMonitor
     class Condition
     {
         friend HoareMonitor;

@@ -8,6 +8,7 @@
 #include "request.h"
 #include "response.h"
 #include "readerwriterlock.h"
+#include <QDebug>
 
 class ReaderWriterCache
 {
@@ -33,7 +34,8 @@ private:
 
                 long currentTime = QDateTime::currentSecsSinceEpoch();
                 cache->lock.lockWriting();
-                for(QHash<QString, TimestampedResponse>::iterator i=cache->map.begin(); i!=cache->map.end(); ++i){
+                for(QHash<QString, TimestampedResponse>::iterator i=cache->map.begin();
+                    i!=cache->map.end(); ++i){
                     if(cache->staleDelaySec < currentTime - i.value().timestamp){
                         cache->map.remove(i.key());
                     }

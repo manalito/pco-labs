@@ -8,6 +8,7 @@ ReaderWriterCache::ReaderWriterCache(int invalidationDelaySec, int staleDelaySec
     invalidationDelaySec(invalidationDelaySec), staleDelaySec(staleDelaySec)
 {
     timer = new InvalidationTimer(this);
+    timer->start();
 }
 
 ReaderWriterCache::~ReaderWriterCache(){
@@ -16,29 +17,24 @@ ReaderWriterCache::~ReaderWriterCache(){
 
 void ReaderWriterCache::putResponse(Response &response) {
     lock.lockWriting();
-
-    TimestampedResponse tr;
-    tr.response = response;
-    tr.timestamp = QDateTime::currentSecsSinceEpoch();
-    map.insert(response.getRequest().getFilePath(), tr);
-
-    QTextStream(stdout) << "entry put in cache" << endl;
-
+    TimestampedResponse timestampedResponse;
+    timestampedResponse.response = response;
+    timestampedResponse.timestamp = QDateTime::currentSecsSinceEpoch();
+    map.insert(response.getRequest().getFilePath(), timestampedResponse);
     lock.unlockWriting();
 }
 
 Option<Response> ReaderWriterCache::tryGetCachedResponse(Request &request) {
     lock.lockReading();
+
+    // if the map contains the response, return an option with this response
     if(map.contains(request.getFilePath())){
-        TimestampedResponse tr = map.value(request.getFilePath());
         lock.unlockReading();
-
-        QTextStream(stdout) << "entry found in cache" << endl;
-
-        return Option<Response>::some(tr.response);
+        return Option<Response>::some(map.value(request.getFilePath()).response);
     }
+    // otherwise, return an empty option
     else{
         lock.unlockReading();
         return Option<Response>::none();
-}
+    }
 }
